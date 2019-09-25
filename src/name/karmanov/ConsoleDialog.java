@@ -41,7 +41,7 @@ class ConsoleDialog {
     /**
      * print help info
      */
-    private static void printHelp() {
+    static void printHelp() {
         Util.out(String.format("Команды:%n" +
                 "help - вывод справки по командам органайзера%n"
                 + "insert - добавить нового клиента%n"
@@ -60,7 +60,7 @@ class ConsoleDialog {
      * @param sInput user input string
      * @param reader console input reader
      */
-    private static void printList(ListClients listClients, String sInput, BufferedReader reader) {
+    static void printList(ListClients listClients, String sInput, BufferedReader reader) {
         ArrayList<Client> localClients;
         if (sInput.equals("list") || sInput.split(" ").length == 1) {
             //-- print only clients
@@ -138,7 +138,7 @@ class ConsoleDialog {
      * @param listClients list of clients
      * @param sInput user input string
      */
-    private static void deleteClient(ListClients listClients, String sInput) {
+    static void deleteClient(ListClients listClients, String sInput) {
         //-- parse input string
         String[] args = sInput.split(" ");
         if (args.length < 2) {
@@ -175,7 +175,7 @@ class ConsoleDialog {
      * @param listClients list of clients
      * @param sInput user input string
      */
-    private static void findClientsByPhone(ListClients listClients, String sInput) {
+    static void findClientsByPhone(ListClients listClients, String sInput) {
         //-- parse input string
         String[] args = sInput.split(" ");
         if (args.length < 2) {
@@ -200,7 +200,7 @@ class ConsoleDialog {
      * @param listClients list of clients
      * @param reader console input reader
      */
-    private static void insertClient(ListClients listClients, BufferedReader reader) {
+    static void insertClient(ListClients listClients, BufferedReader reader) {
         try {
             //-- input client data
             Util.out("Создание нового клиента");
@@ -256,7 +256,7 @@ class ConsoleDialog {
      * @param sInput user input string
      * @param reader console input reader
      */
-    private static void updateClient(ListClients listClients, String sInput, BufferedReader reader) {
+    static void updateClient(ListClients listClients, String sInput, BufferedReader reader) {
         try {
             //-- parse input string
             String[] args = sInput.split(" ");

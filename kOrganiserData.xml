@@ -104,13 +104,6 @@
         <email>ivanov16@uuu.ru</email>
     </client>
     <client>
-        <id>17</id>
-        <name>Иванов17</name>
-        <position>Инженер</position>
-        <organisation>ООО "УУУ"</organisation>
-        <email>ivanov17@uuu.ru</email>
-    </client>
-    <client>
         <id>18</id>
         <name>Иванов18</name>
         <position>Инженер</position>
@@ -120,7 +113,7 @@
     <client>
         <id>19</id>
         <name>Иванов19</name>
-        <position>Инженер</position>
+        <position>Инженер19</position>
         <organisation>ООО "УУУ"</organisation>
         <email>ivanov19@uuu.ru</email>
     </client>

@@ -4,13 +4,13 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.Arrays;
 
 public class Client {
-    int id;
-    String name;
-    String position;
-    String organisation;
-    String email;
+    public int id;
+    public String name;
+    public String position;
+    public String organisation;
+    public String email;
     @XmlElement(name = "phone")
-    String[] phones = null;
+    public String[] phones = null;
 
     Client(int id, String name, String position, String organisation, String email) {
         this.id = id;
