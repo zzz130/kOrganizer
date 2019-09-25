@@ -4,15 +4,15 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.Arrays;
 
 public class Client {
-    public int id;
-    public String name;
-    public String position;
-    public String organisation;
-    public String email;
+    int id;
+    String name;
+    String position;
+    String organisation;
+    String email;
     @XmlElement(name = "phone")
-    public String[] phones = null;
+    String[] phones = null;
 
-    public Client(int id, String name, String position, String organisation, String email) {
+    Client(int id, String name, String position, String organisation, String email) {
         this.id = id;
         this.name = name;
         this.position = position;
@@ -20,7 +20,7 @@ public class Client {
         this.email = email;
     }
 
-    public Client(int id, String name, String position, String organisation, String email, String[] phones) {
+    Client(int id, String name, String position, String organisation, String email, String[] phones) {
         this.id = id;
         this.name = name;
         this.position = position;
@@ -29,7 +29,7 @@ public class Client {
         this.phones = phones;
     }
 
-    public Client() {
+    Client() {
     }
 
     @Override
@@ -39,13 +39,17 @@ public class Client {
                 ", ФИО '" + name + '\'' +
                 ", Должность '" + position + '\'' +
                 ", Организация '" + organisation + '\'' +
-                ", e-mail '" + email + '\'' +
-                ", телефон ";
+                ", e-mail '" + email + '\'';
         if (phones == null || phones.length < 1) {
-            result += "отсутствует";
+            result += ", номер телефона отсутствует";
         }
         else {
-            result += Arrays.toString(phones);
+            if (phones.length > 1) {
+                result += ", номера телефонов " + Arrays.toString(phones);
+            }
+            else {
+                result += ", номер телефона [" + phones[0] + "]";
+            }
         }
         return result;
     }

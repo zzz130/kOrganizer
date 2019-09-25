@@ -15,6 +15,8 @@
         <position>Инженер</position>
         <organisation>ООО "УУУ"</organisation>
         <email>ivanov2@uuu.ru</email>
+        <phone>12-22</phone>
+        <phone>13-33</phone>
     </client>
     <client>
         <id>3</id>
@@ -22,6 +24,7 @@
         <position>Инженер</position>
         <organisation>ООО "УУУ"</organisation>
         <email>ivanov3@uuu.ru</email>
+        <phone>4611</phone>
     </client>
     <client>
         <id>4</id>
@@ -69,7 +72,7 @@
         <id>10</id>
         <name>Иванов10</name>
         <position>Инженер</position>
-        <organisation>ООО "УУУ"</organisation>
+        <organisation>ООО "ААА"</organisation>
         <email>ivanov10@uuu.ru</email>
     </client>
     <client>
@@ -92,20 +95,6 @@
         <position>Инженер</position>
         <organisation>ООО "УУУ"</organisation>
         <email>ivanov13@uuu.ru</email>
-    </client>
-    <client>
-        <id>14</id>
-        <name>Иванов14</name>
-        <position>Инженер</position>
-        <organisation>ООО "УУУ"</organisation>
-        <email>ivanov14@uuu.ru</email>
-    </client>
-    <client>
-        <id>15</id>
-        <name>Иванов15</name>
-        <position>Инженер</position>
-        <organisation>ООО "УУУ"</organisation>
-        <email>ivanov15@uuu.ru</email>
     </client>
     <client>
         <id>16</id>
@@ -138,8 +127,18 @@
     <client>
         <id>20</id>
         <name>Иванов20</name>
-        <position>Инженер</position>
+        <position>Главный инженер</position>
         <organisation>ООО "УУУ"</organisation>
         <email>ivanov20@uuu.ru</email>
+        <phone>33456</phone>
+    </client>
+    <client>
+        <id>21</id>
+        <name>Петров</name>
+        <position></position>
+        <organisation>ООО "ААА"</organisation>
+        <email>petrov@aaa.ru</email>
+        <phone>12345</phone>
+        <phone>67890</phone>
     </client>
 </clients>
