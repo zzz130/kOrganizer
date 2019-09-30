@@ -11,17 +11,17 @@ class UtilTest {
     void out() {
         String expectedString = "teststring";
         //-- change output
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
+        ByteArrayOutputStream baOs = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baOs);
         PrintStream old = System.out;
         System.setOut(ps);
         //-- test output
         Util.out(expectedString);
         expectedString += Util.N;
-        //-- Put things back
+        //-- restore output
         System.out.flush();
         System.setOut(old);
-        //-- test results
-        assertEquals(expectedString, baos.toString());
+        //-- assert results
+        assertEquals(expectedString, baOs.toString());
     }
 }
