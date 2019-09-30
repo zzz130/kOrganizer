@@ -1,5 +1,7 @@
 package name.karmanov;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -12,70 +14,105 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConsoleDialogTest {
-    @Test
-    void processInput_Empty() {
-        String testInput = Util.N;
-        String expectedString = "Органайзер загружен, найдено 20 клиентов" + Util.N +
-                ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
-                "До свидания!" + Util.N;
+    private ByteArrayOutputStream baOs;
+    private PrintStream oldOut;
+    private InputStream oldIn;
+    private String backupDataFileName;
+
+    @BeforeEach
+    void BeforeEach() {
         //-- change output
-        ByteArrayOutputStream baOs = new ByteArrayOutputStream();
+        baOs = new ByteArrayOutputStream();
         PrintStream psOut = new PrintStream(baOs);
-        PrintStream oldOut = System.out;
+        oldOut = System.out;
         System.setOut(psOut);
         //-- change input
-        ByteArrayInputStream baIs = new ByteArrayInputStream(testInput.getBytes());
-        InputStream oldIn = System.in;
-        System.setIn(baIs);
+        oldIn = System.in;
+        //-- backup data file
+        backupDataFileName = ListClients.CONFIG_DATAFILENAME + "_temp" + (1000 * Math.random()) + ".bak";
+        try {
+            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
+                Files.move(Paths.get(ListClients.CONFIG_DATAFILENAME), Paths.get(backupDataFileName));
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            assertTrue(Boolean.FALSE);
+            try {
+                //-- restore data file
+                if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
+                    Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
+                }
+                if (Files.exists(Paths.get(backupDataFileName))){
+                    Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
+                }
+            }
+            catch (Exception ee) {
+                ee.printStackTrace();
+            }
+        }
+    }
 
-        //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
-        ConsoleDialog.processInput(listClients);
-
+    @AfterEach
+    void AfterEach() {
         //-- restore input and output
         System.out.flush();
         System.setOut(oldOut);
         System.setIn(oldIn);
-        //-- test results
-        //Util.out(baOs.toString());
+        //-- restore data file
+        try {
+            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
+                Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
+            }
+            if (Files.exists(Paths.get(backupDataFileName))){
+                Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            assertTrue(Boolean.FALSE);
+        }
+    }
+
+    @Test
+    void processInput_Empty() {
+        //-- prepare testing
+        String testInput = Util.N;
+        String expectedString = "Органайзер загружен, найдено 20 клиентов" + Util.N +
+                ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
+                "До свидания!" + Util.N;
+        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
+        //-- perform testing
+        ListClients listClients = new ListClients();
+        listClients.generateTestData();
+        ConsoleDialog.processInput(listClients);
+        //-- assert results
+        System.out.flush();
         assertEquals(expectedString, baOs.toString());
     }
 
     @Test
     void processInput_Error() {
+        //-- prepare testing
         String testInput = "sdfdsfds" + Util.N + Util.N;
         String expectedString = "Органайзер загружен, найдено 20 клиентов" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "Ошибка: Неизвестная команда, введите help для вывода списка команд" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "До свидания!" + Util.N;
-        //-- change output
-        ByteArrayOutputStream baOs = new ByteArrayOutputStream();
-        PrintStream psOut = new PrintStream(baOs);
-        PrintStream oldOut = System.out;
-        System.setOut(psOut);
-        //-- change input
-        ByteArrayInputStream baIs = new ByteArrayInputStream(testInput.getBytes());
-        InputStream oldIn = System.in;
-        System.setIn(baIs);
-
+        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
         ConsoleDialog.processInput(listClients);
-
-        //-- restore input and output
+        //-- assert results
         System.out.flush();
-        System.setOut(oldOut);
-        System.setIn(oldIn);
-        //-- test results
-        //Util.out(baOs.toString());
         assertEquals(expectedString, baOs.toString());
     }
 
     @Test
     void processInput_Help() {
+        //-- prepare testing
         String testInput = "help" + Util.N + Util.N;
         String expectedString = "Органайзер загружен, найдено 20 клиентов" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
@@ -90,32 +127,19 @@ class ConsoleDialogTest {
                 "find [телефон] - поиск клиентов по номеру телефона или части номера телефона" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "До свидания!" + Util.N;
-        //-- change output
-        ByteArrayOutputStream baOs = new ByteArrayOutputStream();
-        PrintStream psOut = new PrintStream(baOs);
-        PrintStream oldOut = System.out;
-        System.setOut(psOut);
-        //-- change input
-        ByteArrayInputStream baIs = new ByteArrayInputStream(testInput.getBytes());
-        InputStream oldIn = System.in;
-        System.setIn(baIs);
-
+        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
         ConsoleDialog.processInput(listClients);
-
-        //-- restore input and output
+        //-- assert results
         System.out.flush();
-        System.setOut(oldOut);
-        System.setIn(oldIn);
-        //-- test results
-        //Util.out(baos.toString());
         assertEquals(expectedString, baOs.toString());
     }
 
     @Test
     void processInput_List() {
+        //-- prepare testing
         String testInput = "list" + Util.N + Util.N + Util.N;
         String expectedString = "Органайзер загружен, найдено 20 клиентов"  + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:"  + Util.N +
@@ -142,32 +166,19 @@ class ConsoleDialogTest {
                 "Клиент #20, ФИО 'Иванов20', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov20@uuu.ru', номер телефона отсутствует"  + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:"  + Util.N +
                 "До свидания!" + Util.N;
-        //-- change output
-        ByteArrayOutputStream baOs = new ByteArrayOutputStream();
-        PrintStream psOut = new PrintStream(baOs);
-        PrintStream oldOut = System.out;
-        System.setOut(psOut);
-        //-- change input
-        ByteArrayInputStream baIs = new ByteArrayInputStream(testInput.getBytes());
-        InputStream oldIn = System.in;
-        System.setIn(baIs);
-
+        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
         ConsoleDialog.processInput(listClients);
-
-        //-- restore input and output
+        //-- assert results
         System.out.flush();
-        System.setOut(oldOut);
-        System.setIn(oldIn);
-        //-- test results
-        //Util.out(baOs.toString());
         assertEquals(expectedString, baOs.toString());
     }
 
     @Test
     void processInput_ListFilter() {
+        //-- prepare testing
         String testInput = "list -Фио" + Util.N + Util.N + Util.N;
         String expectedString = "Органайзер загружен, найдено 20 клиентов" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
@@ -194,32 +205,19 @@ class ConsoleDialogTest {
                 "Клиент #1, ФИО 'Иванов', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov@uuu.ru', номера телефонов [12-22, 13-31 спросить Степана]" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "До свидания!" + Util.N;
-        //-- change output
-        ByteArrayOutputStream baOs = new ByteArrayOutputStream();
-        PrintStream psOut = new PrintStream(baOs);
-        PrintStream oldOut = System.out;
-        System.setOut(psOut);
-        //-- change input
-        ByteArrayInputStream baIs = new ByteArrayInputStream(testInput.getBytes());
-        InputStream oldIn = System.in;
-        System.setIn(baIs);
-
+        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
         ConsoleDialog.processInput(listClients);
-
-        //-- restore input and output
+        //-- assert results
         System.out.flush();
-        System.setOut(oldOut);
-        System.setIn(oldIn);
-        //-- test results
-        //Util.out(baOs.toString());
         assertEquals(expectedString, baOs.toString());
     }
 
     @Test
     void processInput_Delete() {
+        //-- prepare testing
         String testInput = "delete 13" + Util.N + "list" + Util.N + Util.N + Util.N;
         String expectedString = "Органайзер загружен, найдено 20 клиентов" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
@@ -389,45 +387,11 @@ class ConsoleDialogTest {
                 "        <email>ivanov20@uuu.ru</email>\n" +
                 "    </client>\n" +
                 "</clients>\n";
-        //-- change output
-        ByteArrayOutputStream baOs = new ByteArrayOutputStream();
-        PrintStream psOut = new PrintStream(baOs);
-        PrintStream oldOut = System.out;
-        System.setOut(psOut);
-        //-- change input
-        ByteArrayInputStream baIs = new ByteArrayInputStream(testInput.getBytes());
-        InputStream oldIn = System.in;
-        System.setIn(baIs);
-        //-- backup data file
-        String backupDataFileName = ListClients.CONFIG_DATAFILENAME + "_temp" + (1000 * Math.random()) + ".bak";
-        try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.move(Paths.get(ListClients.CONFIG_DATAFILENAME), Paths.get(backupDataFileName));
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(Boolean.FALSE);
-            try {
-                //-- restore data file
-                if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                    Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-                if (Files.exists(Paths.get(backupDataFileName))){
-                    Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-            }
-            catch (Exception ee) {
-                ee.printStackTrace();
-            }
-            return;
-        }
-
+        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
         ConsoleDialog.processInput(listClients);
-
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
@@ -436,45 +400,16 @@ class ConsoleDialogTest {
         catch (Exception e) {
             e.printStackTrace();
             assertTrue(Boolean.FALSE);
-            try {
-                //-- restore data file
-                if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                    Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-                if (Files.exists(Paths.get(backupDataFileName))){
-                    Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-            }
-            catch (Exception ee) {
-                ee.printStackTrace();
-            }
             return;
         }
-        //-- restore data file
-        try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
-            }
-            if (Files.exists(Paths.get(backupDataFileName))){
-                Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(Boolean.FALSE);
-            return;
-        }
-        //-- restore input and output
+        //-- assert results
         System.out.flush();
-        System.setOut(oldOut);
-        System.setIn(oldIn);
-        //-- test results
-        //Util.out(baos.toString());
         assertEquals(expectedString, baOs.toString());
     }
 
     @Test
     void processInput_Find() {
+        //-- prepare testing
         String testInput = "find 13" + Util.N + Util.N;
         String expectedString = "Органайзер загружен, найдено 20 клиентов" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
@@ -484,32 +419,19 @@ class ConsoleDialogTest {
                 "'ivanov2@uuu.ru', номера телефонов [12-22, 13-33]" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "До свидания!" + Util.N;
-        //-- change output
-        ByteArrayOutputStream baOs = new ByteArrayOutputStream();
-        PrintStream psOut = new PrintStream(baOs);
-        PrintStream oldOut = System.out;
-        System.setOut(psOut);
-        //-- change input
-        ByteArrayInputStream baIs = new ByteArrayInputStream(testInput.getBytes());
-        InputStream oldIn = System.in;
-        System.setIn(baIs);
-
+        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
         ConsoleDialog.processInput(listClients);
-
-        //-- restore input and output
+        //-- assert results
         System.out.flush();
-        System.setOut(oldOut);
-        System.setIn(oldIn);
-        //-- test results
-        //Util.out(baOs.toString());
         assertEquals(expectedString, baOs.toString());
     }
 
     @Test
     void processInput_Insert() {
+        //-- prepare testing
         String testInput = "insert" + Util.N + "Петров" + Util.N + "Менеджер" + Util.N + "ООО \"ЕЕЕ\"" + Util.N
                 + "petrov@eee.ru" + Util.N + "122-1335" + Util.N + "list" + Util.N + Util.N + Util.N + Util.N;
         String expectedString = "Органайзер загружен, найдено 20 клиентов" + Util.N +
@@ -704,45 +626,11 @@ class ConsoleDialogTest {
                 "        <phone>122-1335</phone>\n" +
                 "    </client>\n" +
                 "</clients>\n";
-        //-- change output
-        ByteArrayOutputStream baOs = new ByteArrayOutputStream();
-        PrintStream psOut = new PrintStream(baOs);
-        PrintStream oldOut = System.out;
-        System.setOut(psOut);
-        //-- change input
-        ByteArrayInputStream baIs = new ByteArrayInputStream(testInput.getBytes());
-        InputStream oldIn = System.in;
-        System.setIn(baIs);
-        //-- backup data file
-        String backupDataFileName = ListClients.CONFIG_DATAFILENAME + "_temp" + (1000 * Math.random()) + ".bak";
-        try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.move(Paths.get(ListClients.CONFIG_DATAFILENAME), Paths.get(backupDataFileName));
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(Boolean.FALSE);
-            try {
-                //-- restore data file
-                if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                    Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-                if (Files.exists(Paths.get(backupDataFileName))){
-                    Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-            }
-            catch (Exception ee) {
-                ee.printStackTrace();
-            }
-            return;
-        }
-
+        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
         ConsoleDialog.processInput(listClients);
-
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
@@ -751,45 +639,16 @@ class ConsoleDialogTest {
         catch (Exception e) {
             e.printStackTrace();
             assertTrue(Boolean.FALSE);
-            try {
-                //-- restore data file
-                if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                    Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-                if (Files.exists(Paths.get(backupDataFileName))){
-                    Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-            }
-            catch (Exception ee) {
-                ee.printStackTrace();
-            }
             return;
         }
-        //-- restore data file
-        try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
-            }
-            if (Files.exists(Paths.get(backupDataFileName))){
-                Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(Boolean.FALSE);
-            return;
-        }
-        //-- restore input and output
+        //-- assert results
         System.out.flush();
-        System.setOut(oldOut);
-        System.setIn(oldIn);
-        //-- test results
-        //Util.out(baOs.toString());
         assertEquals(expectedString, baOs.toString());
     }
 
     @Test
     void processInput_Update() {
+        //-- prepare testing
         String testInput = "update 2" + Util.N + "Иванов22" + Util.N + Util.N + "ООО \"ААА\"" + Util.N
                 + "ivanov22@aaa.ru" + Util.N + "13;11" + Util.N + "list" + Util.N + Util.N + Util.N;
         String expectedString = "Органайзер загружен, найдено 20 клиентов" + Util.N +
@@ -980,45 +839,11 @@ class ConsoleDialogTest {
                 "        <email>ivanov20@uuu.ru</email>\n" +
                 "    </client>\n" +
                 "</clients>\n";
-        //-- change output
-        ByteArrayOutputStream baOs = new ByteArrayOutputStream();
-        PrintStream psOut = new PrintStream(baOs);
-        PrintStream oldOut = System.out;
-        System.setOut(psOut);
-        //-- change input
-        ByteArrayInputStream baIs = new ByteArrayInputStream(testInput.getBytes());
-        InputStream oldIn = System.in;
-        System.setIn(baIs);
-        //-- backup data file
-        String backupDataFileName = ListClients.CONFIG_DATAFILENAME + "_temp" + (1000 * Math.random()) + ".bak";
-        try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.move(Paths.get(ListClients.CONFIG_DATAFILENAME), Paths.get(backupDataFileName));
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(Boolean.FALSE);
-            try {
-                //-- restore data file
-                if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                    Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-                if (Files.exists(Paths.get(backupDataFileName))){
-                    Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-            }
-            catch (Exception ee) {
-                ee.printStackTrace();
-            }
-            return;
-        }
-
+        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
         ConsoleDialog.processInput(listClients);
-
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
@@ -1027,40 +852,10 @@ class ConsoleDialogTest {
         catch (Exception e) {
             e.printStackTrace();
             assertTrue(Boolean.FALSE);
-            try {
-                //-- restore data file
-                if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                    Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-                if (Files.exists(Paths.get(backupDataFileName))){
-                    Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
-                }
-            }
-            catch (Exception ee) {
-                ee.printStackTrace();
-            }
             return;
         }
-        //-- restore data file
-        try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
-            }
-            if (Files.exists(Paths.get(backupDataFileName))){
-                Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(Boolean.FALSE);
-            return;
-        }
-        //-- restore input and output
+        //-- assert results
         System.out.flush();
-        System.setOut(oldOut);
-        System.setIn(oldIn);
-        //-- test results
-        //Util.out(baOs.toString());
         assertEquals(expectedString, baOs.toString());
     }
 }
