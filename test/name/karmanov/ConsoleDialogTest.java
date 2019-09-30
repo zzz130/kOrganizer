@@ -248,146 +248,146 @@ class ConsoleDialogTest {
                 "Клиент #20, ФИО 'Иванов20', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov20@uuu.ru', номер телефона отсутствует" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "До свидания!" + Util.N;
-        String expectedFileContents = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" + Util.N +
-                "<clients>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>1</id>" + Util.N +
-                "        <name>Иванов</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov@uuu.ru</email>" + Util.N +
-                "        <phone>12-22</phone>" + Util.N +
-                "        <phone>13-31 спросить Степана</phone>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>2</id>" + Util.N +
-                "        <name>Иванов2</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov2@uuu.ru</email>" + Util.N +
-                "        <phone>12-22</phone>" + Util.N +
-                "        <phone>13-33</phone>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>3</id>" + Util.N +
-                "        <name>Иванов3</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov3@uuu.ru</email>" + Util.N +
-                "        <phone>4611</phone>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>4</id>" + Util.N +
-                "        <name>Иванов4</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov4@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>5</id>" + Util.N +
-                "        <name>Иванов5</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov5@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>6</id>" + Util.N +
-                "        <name>Иванов6</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov6@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>7</id>" + Util.N +
-                "        <name>Иванов7</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov7@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>8</id>" + Util.N +
-                "        <name>Иванов8</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov8@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>9</id>" + Util.N +
-                "        <name>Иванов9</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov9@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>10</id>" + Util.N +
-                "        <name>Иванов10</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov10@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>11</id>" + Util.N +
-                "        <name>Иванов11</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov11@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>12</id>" + Util.N +
-                "        <name>Иванов12</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov12@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>14</id>" + Util.N +
-                "        <name>Иванов14</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov14@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>15</id>" + Util.N +
-                "        <name>Иванов15</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov15@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>16</id>" + Util.N +
-                "        <name>Иванов16</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov16@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>17</id>" + Util.N +
-                "        <name>Иванов17</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov17@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>18</id>" + Util.N +
-                "        <name>Иванов18</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov18@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>19</id>" + Util.N +
-                "        <name>Иванов19</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov19@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
-                "    <client>" + Util.N +
-                "        <id>20</id>" + Util.N +
-                "        <name>Иванов20</name>" + Util.N +
-                "        <position>Инженер</position>" + Util.N +
-                "        <organisation>ООО \"УУУ\"</organisation>" + Util.N +
-                "        <email>ivanov20@uuu.ru</email>" + Util.N +
-                "    </client>" + Util.N +
+        String expectedFileContents = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                "<clients>\n" +
+                "    <client>\n" +
+                "        <id>1</id>\n" +
+                "        <name>Иванов</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov@uuu.ru</email>\n" +
+                "        <phone>12-22</phone>\n" +
+                "        <phone>13-31 спросить Степана</phone>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>2</id>\n" +
+                "        <name>Иванов2</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov2@uuu.ru</email>\n" +
+                "        <phone>12-22</phone>\n" +
+                "        <phone>13-33</phone>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>3</id>\n" +
+                "        <name>Иванов3</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov3@uuu.ru</email>\n" +
+                "        <phone>4611</phone>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>4</id>\n" +
+                "        <name>Иванов4</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov4@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>5</id>\n" +
+                "        <name>Иванов5</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov5@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>6</id>\n" +
+                "        <name>Иванов6</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov6@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>7</id>\n" +
+                "        <name>Иванов7</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov7@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>8</id>\n" +
+                "        <name>Иванов8</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov8@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>9</id>\n" +
+                "        <name>Иванов9</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov9@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>10</id>\n" +
+                "        <name>Иванов10</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov10@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>11</id>\n" +
+                "        <name>Иванов11</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov11@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>12</id>\n" +
+                "        <name>Иванов12</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov12@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>14</id>\n" +
+                "        <name>Иванов14</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov14@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>15</id>\n" +
+                "        <name>Иванов15</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov15@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>16</id>\n" +
+                "        <name>Иванов16</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov16@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>17</id>\n" +
+                "        <name>Иванов17</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov17@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>18</id>\n" +
+                "        <name>Иванов18</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov18@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>19</id>\n" +
+                "        <name>Иванов19</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov19@uuu.ru</email>\n" +
+                "    </client>\n" +
+                "    <client>\n" +
+                "        <id>20</id>\n" +
+                "        <name>Иванов20</name>\n" +
+                "        <position>Инженер</position>\n" +
+                "        <organisation>ООО \"УУУ\"</organisation>\n" +
+                "        <email>ivanov20@uuu.ru</email>\n" +
+                "    </client>\n" +
                 "</clients>\n";
         //-- change output
         ByteArrayOutputStream baOs = new ByteArrayOutputStream();
