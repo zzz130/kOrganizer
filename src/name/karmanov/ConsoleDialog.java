@@ -185,9 +185,14 @@ class ConsoleDialog {
         String phone = args[1];
         //-- find client by phone number
         for (Client client : listClients.clients) {
-            if (client.phones == null) continue;
+            //-- check if client has a phone
+            if (client.phones == null) {
+                continue;
+            }
+            //-- check all phone number to see if it matches the search string
             for (String s : client.phones) {
                 if (s.contains(phone)) {
+                    //if phone found then print client and go to next client
                     Util.out(client);
                     break;
                 }
