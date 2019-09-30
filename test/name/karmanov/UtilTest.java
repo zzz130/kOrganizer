@@ -17,7 +17,7 @@ class UtilTest {
         System.setOut(ps);
         //-- test output
         Util.out(expectedString);
-        expectedString += System.getProperty("line.separator");
+        expectedString += Util.N;
         //-- Put things back
         System.out.flush();
         System.setOut(old);

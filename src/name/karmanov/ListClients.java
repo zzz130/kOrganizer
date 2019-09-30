@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 @XmlRootElement(name = "clients")
 public class ListClients {
-    private static final String CONFIG_DATAFILENAME = "kOrganiserData.xml";
+    static final String CONFIG_DATAFILENAME = "kOrganiserData.xml";
     @XmlElement(name = "client")
     ArrayList<Client> clients = new ArrayList<>();
 
@@ -27,16 +27,16 @@ public class ListClients {
         else {
             for (Client client : clients) {
                 sb.append(client);
-                sb.append(System.getProperty("line.separator"));
+                sb.append(Util.N);
             }
-        }
+            }
         return sb.toString();
     }
 
     /**
      * generate test data set
      */
-    public void generateTestData() {
+    void generateTestData() {
         //-- create test clients
         clients.add(new Client(1, "Иванов", "Инженер", "ООО \"УУУ\""
                 , "ivanov@uuu.ru", new String[] {"12-22", "13-31 спросить Степана"}));
@@ -78,8 +78,6 @@ public class ListClients {
                 , "ivanov19@uuu.ru"));
         clients.add(new Client(20, "Иванов20", "Инженер", "ООО \"УУУ\""
                 , "ivanov20@uuu.ru"));
-        //-- store test clients
-        saveData();
     }
 
     /**

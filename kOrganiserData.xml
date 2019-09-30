@@ -72,7 +72,7 @@
         <id>10</id>
         <name>Иванов10</name>
         <position>Инженер</position>
-        <organisation>ООО "ААА"</organisation>
+        <organisation>ООО "УУУ"</organisation>
         <email>ivanov10@uuu.ru</email>
     </client>
     <client>
@@ -90,11 +90,18 @@
         <email>ivanov12@uuu.ru</email>
     </client>
     <client>
-        <id>13</id>
-        <name>Иванов13</name>
+        <id>14</id>
+        <name>Иванов14</name>
         <position>Инженер</position>
         <organisation>ООО "УУУ"</organisation>
-        <email>ivanov13@uuu.ru</email>
+        <email>ivanov14@uuu.ru</email>
+    </client>
+    <client>
+        <id>15</id>
+        <name>Иванов15</name>
+        <position>Инженер</position>
+        <organisation>ООО "УУУ"</organisation>
+        <email>ivanov15@uuu.ru</email>
     </client>
     <client>
         <id>16</id>
@@ -102,6 +109,13 @@
         <position>Инженер</position>
         <organisation>ООО "УУУ"</organisation>
         <email>ivanov16@uuu.ru</email>
+    </client>
+    <client>
+        <id>17</id>
+        <name>Иванов17</name>
+        <position>Инженер</position>
+        <organisation>ООО "УУУ"</organisation>
+        <email>ivanov17@uuu.ru</email>
     </client>
     <client>
         <id>18</id>
@@ -113,25 +127,15 @@
     <client>
         <id>19</id>
         <name>Иванов19</name>
-        <position>Инженер19</position>
+        <position>Инженер</position>
         <organisation>ООО "УУУ"</organisation>
         <email>ivanov19@uuu.ru</email>
     </client>
     <client>
         <id>20</id>
         <name>Иванов20</name>
-        <position>Главный инженер</position>
+        <position>Инженер</position>
         <organisation>ООО "УУУ"</organisation>
         <email>ivanov20@uuu.ru</email>
-        <phone>33456</phone>
-    </client>
-    <client>
-        <id>21</id>
-        <name>Петров</name>
-        <position></position>
-        <organisation>ООО "ААА"</organisation>
-        <email>petrov@aaa.ru</email>
-        <phone>12345</phone>
-        <phone>67890</phone>
     </client>
 </clients>
