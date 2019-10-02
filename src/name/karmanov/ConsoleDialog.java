@@ -5,32 +5,90 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class ConsoleDialog {
-    /**
-     * process console input
-     * @param listClients clients to process
-     */
-    static void processInput(ListClients listClients) {
+    private static final String MSG_HELP = "Команды:" + Util.N
+            + "help - вывод справки по командам органайзера" + Util.N
+            + "insert - добавить нового клиента" + Util.N
+            + "update [id] - редактировать клиента" + Util.N
+            + "delete [id] - удалить клиента с указанным номером" + Util.N
+            + "list - вывести список клиентов" + Util.N
+            + "list [номер;фио;должность;организация;email;телефон] - вывести список клиентов, "
+            + "сортируя по указанным полям, '-' для сортировки в обратном порядке)" + Util.N
+            + "find [телефон] - поиск клиентов по номеру телефона или части номера телефона";
+    private static final String MSG_MENU_HELLO = "Органайзер загружен, найдено %d клиентов";
+    private static final String MSG_MENU_INPUT = ">> Введите команду и нажмите Enter, для выхода введите пустую строку:";
+    private static final String MSG_MENU_GOODBYE = "До свидания!";
+    private static final String MSG_MENU_ERR_UNKNOWNCOMMAND = "Ошибка: Неизвестная команда, введите help для вывода списка команд";
+    private static final String CMD_KEY_HELP = "help";
+    private static final String CMD_KEY_LIST = "list";
+    private static final String CMD_KEY_DELETE = "delete";
+    private static final String CMD_KEY_FIND = "find";
+    private static final String CMD_KEY_INSERT = "insert";
+    private static final String CMD_KEY_UPDATE = "update";
+    private static final String CMD_KEY_SORT_NAME = "фио";
+    private static final String CMD_KEY_SORT_POSITION = "должность";
+    private static final String CMD_KEY_SORT_ORGANISATION = "организация";
+    private static final String CMD_KEY_SORT_EMAIL = "email";
+    private static final String CMD_KEY_SORT_PHONE = "телефон";
+    private static final String CMD_KEY_SORT_NEGATIVE_PREFIX = "-";
+    private static final String MSG_LIST_PAGING = "...Нажмите Enter для продолжения...";
+    private static final String MSG_ERR_DELETE_NOCLIENTNUMBER = "Ошибка: Не указан номер клиента для удаления!";
+    private static final String MSG_ERR_DELETE_NOIDNUMBER = "Ошибка: Необходимо указать номер клиента для удаления!";
+    private static final String MSG_ERR__CLIENTNOTFOUND = "Ошибка: Клиент номер %d не найден!";
+    private static final String MSG_ERR_DELETE_CANNOTDELETEFROMLIST = "Ошибка списка при удалении Клиента номер %d!";
+    private static final String MSG_DELETE_CLIENTDELETEDOK = "Клиент номер %d успешно удален!";
+    private static final String MSG_ERR_FIND_NOPHONENUMBERSPECIFIED = "Ошибка: Не указан номер телефона клиента для поиска!";
+    private static final String MSG_ERR__INVALIDEMAIL = "Ошибка: Неверный e-mail! E-mail должен содержать символ @ !";
+    private static final String MSG_ERR_INSERT_CANNOTCREATECLIENT = "Ошибка при создании нового клиента!";
+    private static final String MSG_INSERT_CREATENEWCLIENT = "Создание нового клиента";
+    private static final String MSG_INSERT_ENTER_NAME = "Введите ФИО:";
+    private static final String MSG_INSERT_ENTER_POSITION = "Введите Должность:";
+    private static final String MSG_INSERT_ENTER_ORGANISATION = "Введите Название организации:";
+    private static final String MSG_INSERT_ENTER_EMAIL = "Введите e-mail:";
+    private static final String MSG__EMAILKEY = "@";
+    private static final String MSG_INSERT_ENTER_PHONES = "Введите номер телефона клиента, если номеров несколько, разделяйте их точкой с запятой:";
+    private static final String MSG__PHONESKEY = ";";
+    private static final String MSG_INSERT_CLIENTCREATEDOK = "Новый клиент успешно добавлен!";
+    private static final String MSG_ERR_UPDATE_NOCLIENTNUMBER = "Ошибка: Не указан номер клиента для изменения!";
+    private static final String MSG_ERR_UPDATE_PROVIDECLIENTNUMBER = "Ошибка: Необходимо указать номер клиента для изменения!";
+    private static final String MSG_ERR_UPDATE_CANNOTUPDATE = "Ошибка при изменении данных клиента!";
+    private static final String MSG_UPDATE_CHANGECLIENTDATA = "Изменение данных клиента";
+    private static final String MSG_UPDATE_CURRENTNAME = "Текущее ФИО: %s";
+    private static final String MSG_UPDATE_CURRENTPOSITION = "Текущая Должность: %s";
+    private static final String MSG_UPDATE_CURRENTORGANISATION = "Текущая Организация: %s";
+    private static final String MSG_UPDATE_CURRENTEMAIL = "Текущий e-mail: %s";
+    private static final String MSG_UPDATE_CURRENTNOPHONE = "Текущий номер телефона отсутствует";
+    private static final String MSG_UPDATE_CURRENTPHONE = "Текущий номер телефона: %s";
+    private static final String MSG_UPDATE_CURRENTPHONES = "Текущие номера телефонов: %s";
+    private static final String MSG_UPDATE_ENTERNAME = "Введите новое ФИО или пустую строку если не хотите изменять информацию:";
+    private static final String MSG_UPDATE_ENTERPOSITION = "Введите новую Должность или пустую строку если не хотите изменять информацию:";
+    private static final String MSG_UPDATE_ENTERORGANISATION = "Введите новую Организацию или пустую строку если не хотите изменять информацию:";
+    private static final String MSG_UPDATE_ENTEREMAIL = "Введите новый e-mail или пустую строку если не хотите изменять информацию:";
+    private static final String MSG_UPDATE_ENTERPHONES = "Введите номера телефонов через точку с запятой, или пустую строку если не хотите изменять данные:";
+    private static final String MSG_UPDATE_CHANGEOK = "Данные клиента успешно изменены!";
+
+    public void processInput(ListClients listClients) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             String sInput;
             //-- print hello
-            Util.out("Органайзер загружен, найдено " + listClients.clients.size() + " клиентов");
+            //Util.out("Органайзер загружен, найдено " + listClients.clients.size() + " клиентов");
+            Util.out(String.format(MSG_MENU_HELLO, listClients.clients.size()));
             //-- process input
             while (true) {
                 //-- read input
-                Util.out(">> Введите команду и нажмите Enter, для выхода введите пустую строку:");
+                Util.out(MSG_MENU_INPUT);
                 sInput = reader.readLine().trim().toLowerCase();
                 if (sInput.length() == 0) {
-                    Util.out("До свидания!");
+                    Util.out(MSG_MENU_GOODBYE);
                     break;
                 }
                 //-- process commands
-                if (sInput.startsWith("help")) printHelp();
-                else if (sInput.startsWith("list")) printList(listClients, sInput, reader);
-                else if (sInput.startsWith("delete")) deleteClient(listClients, sInput);
-                else if (sInput.startsWith("find")) findClientsByPhone(listClients, sInput);
-                else if (sInput.startsWith("insert")) insertClient(listClients, reader);
-                else if (sInput.startsWith("update")) updateClient(listClients, sInput, reader);
-                else Util.out("Ошибка: Неизвестная команда, введите help для вывода списка команд");
+                if (sInput.startsWith(CMD_KEY_HELP)) printHelp();
+                else if (sInput.startsWith(CMD_KEY_LIST)) printList(listClients, sInput, reader);
+                else if (sInput.startsWith(CMD_KEY_DELETE)) deleteClient(listClients, sInput);
+                else if (sInput.startsWith(CMD_KEY_FIND)) findClientsByPhone(listClients, sInput);
+                else if (sInput.startsWith(CMD_KEY_INSERT)) insertClient(listClients, reader);
+                else if (sInput.startsWith(CMD_KEY_UPDATE)) updateClient(listClients, sInput, reader);
+                else Util.out(MSG_MENU_ERR_UNKNOWNCOMMAND);
             }
         }
         catch (Exception e) {
@@ -38,64 +96,41 @@ class ConsoleDialog {
         }
     }
 
-    /**
-     * print help info
-     */
-    private static void printHelp() {
-        Util.out(String.format("Команды:%n" +
-                "help - вывод справки по командам органайзера%n"
-                + "insert - добавить нового клиента%n"
-                + "update [id] - редактировать клиента%n"
-                + "delete [id] - удалить клиента с указанным номером%n"
-                + "list - вывести список клиентов%n"
-                + "list [номер;фио;должность;организация;email;телефон] - вывести список клиентов, "
-                + "сортируя по указанным полям, '-' для сортировки в обратном порядке)%n"
-                + "find [телефон] - поиск клиентов по номеру телефона или части номера телефона"
-        ));
+    private void printHelp() {
+        Util.out(MSG_HELP);
     }
 
-    /**
-     * print clients list with possibility to sort by multiple fields
-     * @param listClients list of clients
-     * @param sInput user input string
-     * @param reader console input reader
-     */
-    private static void printList(ListClients listClients, String sInput, BufferedReader reader) {
+    private void printList(ListClients listClients, String sInput, BufferedReader reader) {
         ArrayList<Client> localClients;
-        if (sInput.equals("list") || sInput.split(" ").length == 1) {
-            //-- print only clients
+        if (sInput.equals(CMD_KEY_LIST) || sInput.split(" ").length == 1) {
+            //-- print all clients without sorting
             localClients = listClients.clients;
         }
         else {
             //--sort clients to print
             localClients = new ArrayList<>(listClients.clients);
-            /*
-            Collections.sort(localClients, Comparator.comparing(Client::getOrganisation)
-                    .thenComparing(Client::getName)
-                    .thenComparing(Client::getPosition));
-            //*/
             String[] fields = sInput.split(" ")[1].split(";");
             localClients.sort(new Comparator<Client>() {
                 @Override
                 public int compare(Client o1, Client o2) {
                     int compareResult = 0;
                     for (String field : fields) {
-                        boolean isNegativeSort = field.startsWith("-");
-                        field = field.trim().replace("-", "");
+                        boolean isNegativeSort = field.startsWith(CMD_KEY_SORT_NEGATIVE_PREFIX);
+                        field = field.trim().replace(CMD_KEY_SORT_NEGATIVE_PREFIX, "");
                         switch (field) {
-                            case "фио":
+                            case CMD_KEY_SORT_NAME:
                                 compareResult = o1.name.compareTo(o2.name);
                                 break;
-                            case "должность":
+                            case CMD_KEY_SORT_POSITION:
                                 compareResult = o1.position.compareTo(o2.position);
                                 break;
-                            case "организация":
+                            case CMD_KEY_SORT_ORGANISATION:
                                 compareResult = o1.organisation.compareTo(o2.organisation);
                                 break;
-                            case "email":
+                            case CMD_KEY_SORT_EMAIL:
                                 compareResult = o1.email.compareTo(o2.email);
                                 break;
-                            case "телефон":
+                            case CMD_KEY_SORT_PHONE:
                                 String s1 = "", s2 = "";
                                 if (o1.phones != null) {
                                     s1 = Arrays.toString(o1.phones);
@@ -117,11 +152,11 @@ class ConsoleDialog {
                 }
             });
         }
-        //-- print clients list
+        //-- print clients list with paging
         for (int i = 0; i < localClients.size(); i++) {
             Util.out(localClients.get(i));
             if (i > 0 && (i + 1) % 10 == 0 && i < localClients.size() - 1) {
-                Util.out("...Нажмите Enter для продолжения...");
+                Util.out(MSG_LIST_PAGING);
                 try {
                     reader.readLine();
                 }
@@ -133,16 +168,11 @@ class ConsoleDialog {
         }
     }
 
-    /**
-     * delete selected client by id
-     * @param listClients list of clients
-     * @param sInput user input string
-     */
-    private static void deleteClient(ListClients listClients, String sInput) {
+    private void deleteClient(ListClients listClients, String sInput) {
         //-- parse input string
         String[] args = sInput.split(" ");
         if (args.length < 2) {
-            Util.out("Ошибка: Не указан номер клиента для удаления!");
+            Util.out(MSG_ERR_DELETE_NOCLIENTNUMBER);
             return;
         }
         int id;
@@ -150,36 +180,31 @@ class ConsoleDialog {
             id = Integer.parseInt(args[1]);
         }
         catch (Exception e) {
-            Util.out("Ошибка: Необходимо указать номер клиента для удаления!");
+            Util.out(MSG_ERR_DELETE_NOIDNUMBER);
             return;
         }
         //-- find client by id
         Client client = listClients.findClientById(id);
         if (client == null) {
-            Util.out("Ошибка: Клиент номер " + id + " не найден!");
+            Util.out(String.format(MSG_ERR__CLIENTNOTFOUND, id));
             return;
         }
         //-- delete client
         if (!listClients.clients.remove(client)) {
-            Util.out("Ошибка списка при удалении Клиента номер " + id + "!");
+            Util.out(String.format(MSG_ERR_DELETE_CANNOTDELETEFROMLIST, id));
             return;
         }
         //-- save changes
         listClients.saveData();
         Util.out(client);
-        Util.out("Клиент номер " + id + " успешно удален!");
+        Util.out(String.format(MSG_DELETE_CLIENTDELETEDOK, id));
     }
 
-    /**
-     * find clients by phone number
-     * @param listClients list of clients
-     * @param sInput user input string
-     */
-    private static void findClientsByPhone(ListClients listClients, String sInput) {
+    private void findClientsByPhone(ListClients listClients, String sInput) {
         //-- parse input string
         String[] args = sInput.split(" ");
         if (args.length < 2) {
-            Util.out("Ошибка: Не указан номер телефона клиента для поиска!");
+            Util.out(MSG_ERR_FIND_NOPHONENUMBERSPECIFIED);
             return;
         }
         String phone = args[1];
@@ -200,36 +225,31 @@ class ConsoleDialog {
         }
     }
 
-    /**
-     * insert new client
-     * @param listClients list of clients
-     * @param reader console input reader
-     */
-    private static void insertClient(ListClients listClients, BufferedReader reader) {
+    private void insertClient(ListClients listClients, BufferedReader reader) {
         try {
             //-- input client data
-            Util.out("Создание нового клиента");
+            Util.out(MSG_INSERT_CREATENEWCLIENT);
             Client client = new Client();
-            Util.out("Введите ФИО:");
+            Util.out(MSG_INSERT_ENTER_NAME);
             client.name = reader.readLine();
-            Util.out("Введите Должность:");
+            Util.out(MSG_INSERT_ENTER_POSITION);
             client.position = reader.readLine();
-            Util.out("Введите Название организации:");
+            Util.out(MSG_INSERT_ENTER_ORGANISATION);
             client.organisation = reader.readLine();
             while (true) {
-                Util.out("Введите e-mail:");
+                Util.out(MSG_INSERT_ENTER_EMAIL);
                 client.email = reader.readLine();
-                if (client.email.length() > 0 && !client.email.contains("@")) {
-                    Util.out("Ошибка: Неверный e-mail! E-mail должен содержать символ @ !");
+                if (client.email.length() > 0 && !client.email.contains(MSG__EMAILKEY)) {
+                    Util.out(MSG_ERR__INVALIDEMAIL);
                 }
                 else {
                     break;
                 }
             }
-            Util.out("Введите номер телефона клиента, если номеров несколько, разделяйте их точкой с запятой:");
+            Util.out(MSG_INSERT_ENTER_PHONES);
             String phones = reader.readLine();
             if (phones.length() > 0) {
-                client.phones = phones.split(";");
+                client.phones = phones.split(MSG__PHONESKEY);
             }
             //-- get new id
             int id = 0;
@@ -247,26 +267,20 @@ class ConsoleDialog {
             listClients.clients.add(client);
             listClients.saveData();
             Util.out(client);
-            Util.out("Новый клиент успешно добавлен!");
+            Util.out(MSG_INSERT_CLIENTCREATEDOK);
         }
         catch (Exception e) {
             e.printStackTrace();
-            Util.out("Ошибка при создании нового клиента!");
+            Util.out(MSG_ERR_INSERT_CANNOTCREATECLIENT);
         }
     }
 
-    /**
-     * update client data
-     * @param listClients list of clients
-     * @param sInput user input string
-     * @param reader console input reader
-     */
-    private static void updateClient(ListClients listClients, String sInput, BufferedReader reader) {
+    private void updateClient(ListClients listClients, String sInput, BufferedReader reader) {
         try {
             //-- parse input string
             String[] args = sInput.split(" ");
             if (args.length < 2) {
-                Util.out("Ошибка: Не указан номер клиента для изменения!");
+                Util.out(MSG_ERR_UPDATE_NOCLIENTNUMBER);
                 return;
             }
             int id;
@@ -274,43 +288,43 @@ class ConsoleDialog {
                 id = Integer.parseInt(args[1]);
             }
             catch (Exception e) {
-                Util.out("Ошибка: Необходимо указать номер клиента для изменения!");
+                Util.out(MSG_ERR_UPDATE_PROVIDECLIENTNUMBER);
                 return;
             }
             //-- find client by id
             Client client = listClients.findClientById(id);
             if (client == null) {
-                Util.out("Ошибка: Клиент номер " + id + " не найден!");
+                Util.out(String.format(MSG_ERR__CLIENTNOTFOUND, id));
                 return;
             }
             //-- update client data
             String s;
-            Util.out("Изменение данных клиента");
+            Util.out(MSG_UPDATE_CHANGECLIENTDATA);
             Util.out(client);
-            Util.out("Текущее ФИО:" + client.name);
-            Util.out("Введите новое ФИО или пустую строку если не хотите изменять информацию:");
+            Util.out(String.format(MSG_UPDATE_CURRENTNAME, client.name));
+            Util.out(MSG_UPDATE_ENTERNAME);
             s = reader.readLine();
             if (s.length() > 0) {
                 client.name = s;
             }
-            Util.out("Текущая Должность:" + client.position);
-            Util.out("Введите новую Должность или пустую строку если не хотите изменять информацию:");
+            Util.out(String.format(MSG_UPDATE_CURRENTPOSITION, client.position));
+            Util.out(MSG_UPDATE_ENTERPOSITION);
             s = reader.readLine();
             if (s.length() > 0) {
                 client.position = s;
             }
-            Util.out("Текущая Организация:" + client.organisation);
-            Util.out("Введите новую Организацию или пустую строку если не хотите изменять информацию:");
+            Util.out(String.format(MSG_UPDATE_CURRENTORGANISATION, client.organisation));
+            Util.out(MSG_UPDATE_ENTERORGANISATION);
             s = reader.readLine();
             if (s.length() > 0) {
                 client.organisation = s;
             }
-            Util.out("Текущий e-mail:" + client.email);
+            Util.out(String.format(MSG_UPDATE_CURRENTEMAIL, client.email));
             while (true) {
-                Util.out("Введите новый e-mail или пустую строку если не хотите изменять информацию:");
+                Util.out(MSG_UPDATE_ENTEREMAIL);
                 s = reader.readLine();
-                if (s.length() > 0 && !s.contains("@")) {
-                    Util.out("Ошибка: Неверный e-mail! E-mail должен содержать символ @ !");
+                if (s.length() > 0 && !s.contains(MSG__EMAILKEY)) {
+                    Util.out(MSG_ERR__INVALIDEMAIL);
                 }
                 else {
                     break;
@@ -320,28 +334,27 @@ class ConsoleDialog {
                 client.email = s;
             }
             if (client.phones == null || client.phones.length < 1) {
-                Util.out("Текущий номер телефона отсутствует");
+                Util.out(MSG_UPDATE_CURRENTNOPHONE);
             }
             else if (client.phones.length == 1) {
-                Util.out("Текущий номер телефона: " + client.phones[0]);
+                Util.out(String.format(MSG_UPDATE_CURRENTPHONE, client.phones[0]));
             }
             else {
-                Util.out("Текущие номера телефонов: " + Arrays.toString(client.phones));
+                Util.out(String.format(MSG_UPDATE_CURRENTPHONES, Arrays.toString(client.phones)));
             }
-            Util.out("Введите номера телефонов через точку с запятой, "
-                    + "или пустую строку если не хотите изменять данные:");
+            Util.out(MSG_UPDATE_ENTERPHONES);
             s = reader.readLine();
             if (s.length() > 0) {
-                client.phones = s.split(";");
+                client.phones = s.split(MSG__PHONESKEY);
             }
             //-- save data
             listClients.saveData();
             Util.out(client);
-            Util.out("Данные клиента успешно изменены!");
+            Util.out(MSG_UPDATE_CHANGEOK);
         }
         catch (Exception e) {
             e.printStackTrace();
-            Util.out("Ошибка при изменении данных клиента!");
+            Util.out(MSG_ERR_UPDATE_CANNOTUPDATE);
         }
     }
 }

@@ -12,24 +12,7 @@ public class Client {
     @XmlElement(name = "phone")
     public String[] phones = null;
 
-    Client(int id, String name, String position, String organisation, String email) {
-        this.id = id;
-        this.name = name;
-        this.position = position;
-        this.organisation = organisation;
-        this.email = email;
-    }
-
-    Client(int id, String name, String position, String organisation, String email, String[] phones) {
-        this.id = id;
-        this.name = name;
-        this.position = position;
-        this.organisation = organisation;
-        this.email = email;
-        this.phones = phones;
-    }
-
-    Client() {
+    public Client() {
     }
 
     @Override

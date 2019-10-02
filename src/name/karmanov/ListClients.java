@@ -7,22 +7,27 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
 @XmlRootElement(name = "clients")
 public class ListClients {
-    static final String CONFIG_DATAFILENAME = "kOrganiserData.xml";
+    public static final String CONFIG_DATAFILENAME = "kOrganiserData.xml";
+
+    private static final String MSG_TOSTRING = "Нет данных о клиентах";
+    private static final String MSG_ERR_NODATAFILE = "Ошибка: Файл данных отсутствует";
+    private static final String MSG_ERR_NODATAINFILE = "Ошибка: Данные в файле не найдены";
+    private static final String MSG_ERR_NOCLIENTRECORDS= "Ошибка: Записи о клиентах отсутствуют";
+
     @XmlElement(name = "client")
-    ArrayList<Client> clients = new ArrayList<>();
+    public ArrayList<Client> clients = new ArrayList<>();
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (clients == null || clients.size() < 1) {
-            sb.append("Нет данных о клиентах");
+            sb.append(MSG_TOSTRING);
         }
         else {
             for (Client client : clients) {
@@ -33,65 +38,35 @@ public class ListClients {
         return sb.toString();
     }
 
-    /**
-     * generate test data set
-     */
-    void generateTestData() {
-        //-- create test clients
-        clients.add(new Client(1, "Иванов", "Инженер", "ООО \"УУУ\""
-                , "ivanov@uuu.ru", new String[] {"12-22", "13-31 спросить Степана"}));
-        clients.add(new Client(2, "Иванов2", "Инженер", "ООО \"УУУ\""
-                , "ivanov2@uuu.ru", new String[] {"12-22", "13-33"}));
-        clients.add(new Client(3, "Иванов3", "Инженер", "ООО \"УУУ\""
-                , "ivanov3@uuu.ru", new String[] {"4611"}));
-        clients.add(new Client(4, "Иванов4", "Инженер", "ООО \"УУУ\""
-                , "ivanov4@uuu.ru"));
-        clients.add(new Client(5, "Иванов5", "Инженер", "ООО \"УУУ\""
-                , "ivanov5@uuu.ru"));
-        clients.add(new Client(6, "Иванов6", "Инженер", "ООО \"УУУ\""
-                , "ivanov6@uuu.ru"));
-        clients.add(new Client(7, "Иванов7", "Инженер", "ООО \"УУУ\""
-                , "ivanov7@uuu.ru"));
-        clients.add(new Client(8, "Иванов8", "Инженер", "ООО \"УУУ\""
-                , "ivanov8@uuu.ru"));
-        clients.add(new Client(9, "Иванов9", "Инженер", "ООО \"УУУ\""
-                , "ivanov9@uuu.ru"));
-        clients.add(new Client(10, "Иванов10", "Инженер", "ООО \"УУУ\""
-                , "ivanov10@uuu.ru"));
-        clients.add(new Client(11, "Иванов11", "Инженер", "ООО \"УУУ\""
-                , "ivanov11@uuu.ru"));
-        clients.add(new Client(12, "Иванов12", "Инженер", "ООО \"УУУ\""
-                , "ivanov12@uuu.ru"));
-        clients.add(new Client(13, "Иванов13", "Инженер", "ООО \"УУУ\""
-                , "ivanov13@uuu.ru"));
-        clients.add(new Client(14, "Иванов14", "Инженер", "ООО \"УУУ\""
-                , "ivanov14@uuu.ru"));
-        clients.add(new Client(15, "Иванов15", "Инженер", "ООО \"УУУ\""
-                , "ivanov15@uuu.ru"));
-        clients.add(new Client(16, "Иванов16", "Инженер", "ООО \"УУУ\""
-                , "ivanov16@uuu.ru"));
-        clients.add(new Client(17, "Иванов17", "Инженер", "ООО \"УУУ\""
-                , "ivanov17@uuu.ru"));
-        clients.add(new Client(18, "Иванов18", "Инженер", "ООО \"УУУ\""
-                , "ivanov18@uuu.ru"));
-        clients.add(new Client(19, "Иванов19", "Инженер", "ООО \"УУУ\""
-                , "ivanov19@uuu.ru"));
-        clients.add(new Client(20, "Иванов20", "Инженер", "ООО \"УУУ\""
-                , "ivanov20@uuu.ru"));
+    public void generateTestData() {
+        Client client;
+        client = new Client();
+        client.id = 1;
+        client.name = "Иванов";
+        client.position = "Инженер";
+        client.organisation = "ООО \"УУУ\"";
+        client.email = "ivanov@uuu.ru";
+        clients.add(client);
+        for (int i = 2; i <= 20; i++) {
+            client = new Client();
+            client.id = i;
+            client.name = "Иванов" + i;
+            client.position = "Инженер";
+            client.organisation = "ООО \"УУУ\"";
+            client.email = "ivanov" + i + "@uuu.ru";
+            clients.add(client);
+        }
+        clients.get(0).phones = new String[] {"12-22", "13-31 спросить Степана"};
+        clients.get(1).phones = new String[] {"12-22", "13-33"};
+        clients.get(2).phones = new String[] {"4611"};
     }
 
-    /**
-     * load data from xml file
-     * @return bResult
-     */
-    boolean loadData() {
+    public boolean loadData() {
         try {
-            //-- check if data file exists
             if (!Files.exists(Paths.get(CONFIG_DATAFILENAME))) {
-                Util.out("Ошибка: Файл данных отсутствует");
+                Util.out(MSG_ERR_NODATAFILE);
                 return true;
             }
-            //--load data
             JAXBContext context = JAXBContext.newInstance(ListClients.class);
             Unmarshaller unMarshaller = context.createUnmarshaller();
             ListClients listClients = null;
@@ -102,11 +77,11 @@ public class ListClients {
                 e.printStackTrace();
             }
             if (listClients == null) {
-                Util.out("Ошибка: Данные в файле не найдены");
+                Util.out(MSG_ERR_NODATAINFILE);
                 return true;
             }
             if (listClients.clients == null || listClients.clients.size() < 1) {
-                Util.out("Ошибка: Записи о клиентах отсутствуют");
+                Util.out(MSG_ERR_NOCLIENTRECORDS);
                 return true;
             }
             this.clients = listClients.clients;
@@ -118,36 +93,21 @@ public class ListClients {
         return true;
     }
 
-    /**
-     * save data into xml file
-     * @return bResult
-     */
-    boolean saveData() {
+    public void saveData() {
         try {
-            //if (Files.exists(Paths.get(CONFIG_DATAFILENAME))) Files.delete(Paths.get(CONFIG_DATAFILENAME));
-            //Files.createFile(Paths.get(CONFIG_DATAFILENAME));
             JAXBContext context = JAXBContext.newInstance(ListClients.class);
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             try (OutputStream fStream = Files.newOutputStream(Paths.get(CONFIG_DATAFILENAME))) {
                 marshaller.marshal(this, fStream);
             }
-            //-- debug display serialized data
-            /*
-            StringWriter writer = new StringWriter();
-            marshaller.marshal(this, writer);
-            Util.out(writer);
-            writer.close();
-            //*/
         }
         catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
     }
 
-    Client findClientById(int id) {
+    public Client findClientById(int id) {
         for (Client client : clients) {
             if (client.id == id) {
                 return client;

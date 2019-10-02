@@ -6,8 +6,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class ClientTest {
     @Test
     void testToString() {
-        Client client = new Client(1, "Иванов", "Инженер", "ООО \"УУУ\""
-                , "ivanov@uuu.ru", new String[] {"12-22", "13-31 спросить Степана"});
+        Client client;
+        client = new Client();
+        client.id = 1;
+        client.name = "Иванов";
+        client.position = "Инженер";
+        client.organisation = "ООО \"УУУ\"";
+        client.email = "ivanov@uuu.ru";
+        client.phones = new String[] {"12-22", "13-31 спросить Степана"};
         String expectedString = "Клиент #1, ФИО 'Иванов', Должность 'Инженер', Организация 'ООО \"УУУ\"', "
                 + "e-mail 'ivanov@uuu.ru', номера телефонов [12-22, 13-31 спросить Степана]";
         assertEquals(expectedString, client.toString());
@@ -15,8 +21,13 @@ class ClientTest {
 
     @Test
     void testToString2() {
-        Client client = new Client(1, "Иванов", "Инженер", "ООО \"УУУ\""
-                , "ivanov@uuu.ru");
+        Client client;
+        client = new Client();
+        client.id = 1;
+        client.name = "Иванов";
+        client.position = "Инженер";
+        client.organisation = "ООО \"УУУ\"";
+        client.email = "ivanov@uuu.ru";
         String expectedString = "Клиент #1, ФИО 'Иванов', Должность 'Инженер', Организация 'ООО \"УУУ\"', "
                 + "e-mail 'ivanov@uuu.ru', номер телефона отсутствует";
         assertEquals(expectedString, client.toString());
@@ -24,8 +35,14 @@ class ClientTest {
 
     @Test
     void testToString3() {
-        Client client = new Client(1, "Иванов", "Инженер", "ООО \"УУУ\""
-                , "ivanov@uuu.ru", new String[] {"12-22"});
+        Client client;
+        client = new Client();
+        client.id = 1;
+        client.name = "Иванов";
+        client.position = "Инженер";
+        client.organisation = "ООО \"УУУ\"";
+        client.email = "ivanov@uuu.ru";
+        client.phones = new String[] {"12-22"};
         String expectedString = "Клиент #1, ФИО 'Иванов', Должность 'Инженер', Организация 'ООО \"УУУ\"', "
                 + "e-mail 'ivanov@uuu.ru', номер телефона [12-22]";
         assertEquals(expectedString, client.toString());

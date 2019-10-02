@@ -85,7 +85,7 @@ class ConsoleDialogTest {
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
-        ConsoleDialog.processInput(listClients);
+        (new ConsoleDialog()).processInput(listClients);
         //-- assert results
         System.out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -104,7 +104,7 @@ class ConsoleDialogTest {
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
-        ConsoleDialog.processInput(listClients);
+        (new ConsoleDialog()).processInput(listClients);
         //-- assert results
         System.out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -131,7 +131,7 @@ class ConsoleDialogTest {
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
-        ConsoleDialog.processInput(listClients);
+        (new ConsoleDialog()).processInput(listClients);
         //-- assert results
         System.out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -170,7 +170,7 @@ class ConsoleDialogTest {
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
-        ConsoleDialog.processInput(listClients);
+        (new ConsoleDialog()).processInput(listClients);
         //-- assert results
         System.out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -209,7 +209,7 @@ class ConsoleDialogTest {
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
-        ConsoleDialog.processInput(listClients);
+        (new ConsoleDialog()).processInput(listClients);
         //-- assert results
         System.out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -391,7 +391,7 @@ class ConsoleDialogTest {
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
-        ConsoleDialog.processInput(listClients);
+        (new ConsoleDialog()).processInput(listClients);
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
@@ -423,7 +423,7 @@ class ConsoleDialogTest {
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
-        ConsoleDialog.processInput(listClients);
+        (new ConsoleDialog()).processInput(listClients);
         //-- assert results
         System.out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -630,7 +630,7 @@ class ConsoleDialogTest {
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
-        ConsoleDialog.processInput(listClients);
+        (new ConsoleDialog()).processInput(listClients);
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
@@ -655,13 +655,13 @@ class ConsoleDialogTest {
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "Изменение данных клиента" + Util.N +
                 "Клиент #2, ФИО 'Иванов2', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov2@uuu.ru', номера телефонов [12-22, 13-33]" + Util.N +
-                "Текущее ФИО:Иванов2" + Util.N +
+                "Текущее ФИО: Иванов2" + Util.N +
                 "Введите новое ФИО или пустую строку если не хотите изменять информацию:" + Util.N +
-                "Текущая Должность:Инженер" + Util.N +
+                "Текущая Должность: Инженер" + Util.N +
                 "Введите новую Должность или пустую строку если не хотите изменять информацию:" + Util.N +
-                "Текущая Организация:ООО \"УУУ\"" + Util.N +
+                "Текущая Организация: ООО \"УУУ\"" + Util.N +
                 "Введите новую Организацию или пустую строку если не хотите изменять информацию:" + Util.N +
-                "Текущий e-mail:ivanov2@uuu.ru" + Util.N +
+                "Текущий e-mail: ivanov2@uuu.ru" + Util.N +
                 "Введите новый e-mail или пустую строку если не хотите изменять информацию:" + Util.N +
                 "Текущие номера телефонов: [12-22, 13-33]" + Util.N +
                 "Введите номера телефонов через точку с запятой, или пустую строку если не хотите изменять данные:" + Util.N +
@@ -843,7 +843,7 @@ class ConsoleDialogTest {
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
-        ConsoleDialog.processInput(listClients);
+        (new ConsoleDialog()).processInput(listClients);
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
