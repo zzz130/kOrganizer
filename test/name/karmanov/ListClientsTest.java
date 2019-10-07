@@ -4,30 +4,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ListClientsTest {
-    private ByteArrayOutputStream baOs;
-    private PrintStream oldOut;
-    private InputStream oldIn;
     private String backupDataFileName;
 
     @BeforeEach
     void BeforeEach() {
-        //-- change output
-        baOs = new ByteArrayOutputStream();
-        PrintStream psOut = new PrintStream(baOs);
-        oldOut = System.out;
-        System.setOut(psOut);
-        //-- change input
-        oldIn = System.in;
         //-- backup data file
         backupDataFileName = ListClients.CONFIG_DATAFILENAME + "_temp" + (1000 * Math.random()) + ".bak";
         try {
@@ -55,10 +41,6 @@ class ListClientsTest {
 
     @AfterEach
     void AfterEach() {
-        //-- restore input and output
-        System.out.flush();
-        System.setOut(oldOut);
-        System.setIn(oldIn);
         //-- restore data file
         try {
             if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
@@ -104,7 +86,7 @@ class ListClientsTest {
     @Test
     void saveAndLoadData() {
         //-- prepare testing
-        String testInput = "";
+        String expectedLoadMessage = "";
         String expectedFileContents = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<clients>\n" +
                 "    <client>\n" +
@@ -253,14 +235,16 @@ class ListClientsTest {
                 "        <email>ivanov20@uuu.ru</email>\n" +
                 "    </client>\n" +
                 "</clients>\n";
-        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
         ListClients listClients = new ListClients();
         listClients.generateTestData();
         listClients.saveData();
         ListClients listClients2 = new ListClients();
-        if (!listClients2.loadData()) {
-            assertTrue(Boolean.FALSE);
+        String errorMessage = "";
+        boolean bResult = listClients2.loadData(errorMessage);
+        assertTrue(bResult);
+        assertEquals(expectedLoadMessage, errorMessage);
+        if (!bResult) {
             return;
         }
         assertEquals(listClients.toString(), listClients2.toString());

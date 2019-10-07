@@ -12,9 +12,6 @@ public class Client {
     @XmlElement(name = "phone")
     public String[] phones = null;
 
-    public Client() {
-    }
-
     @Override
     public String toString() {
         String result = "Клиент" +

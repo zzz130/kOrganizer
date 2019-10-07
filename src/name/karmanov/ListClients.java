@@ -38,7 +38,7 @@ public class ListClients {
         return sb.toString();
     }
 
-    public void generateTestData() {
+    public ListClients generateTestData() {
         Client client;
         client = new Client();
         client.id = 1;
@@ -59,12 +59,15 @@ public class ListClients {
         clients.get(0).phones = new String[] {"12-22", "13-31 спросить Степана"};
         clients.get(1).phones = new String[] {"12-22", "13-33"};
         clients.get(2).phones = new String[] {"4611"};
+        return this;
     }
 
-    public boolean loadData() {
+    public boolean loadData(String errorMessage) {
+        //TODO set error message to local var
+        //TODO optimize try catch blocks to safe read line and etc.
         try {
             if (!Files.exists(Paths.get(CONFIG_DATAFILENAME))) {
-                Util.out(MSG_ERR_NODATAFILE);
+                errorMessage = MSG_ERR_NODATAFILE;
                 return true;
             }
             JAXBContext context = JAXBContext.newInstance(ListClients.class);
@@ -77,11 +80,11 @@ public class ListClients {
                 e.printStackTrace();
             }
             if (listClients == null) {
-                Util.out(MSG_ERR_NODATAINFILE);
+                errorMessage = MSG_ERR_NODATAINFILE;
                 return true;
             }
             if (listClients.clients == null || listClients.clients.size() < 1) {
-                Util.out(MSG_ERR_NOCLIENTRECORDS);
+                errorMessage = MSG_ERR_NOCLIENTRECORDS;
                 return true;
             }
             this.clients = listClients.clients;

@@ -1,7 +1,9 @@
 package name.karmanov;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.*;
 
 class ConsoleDialog {
@@ -66,29 +68,42 @@ class ConsoleDialog {
     private static final String MSG_UPDATE_ENTERPHONES = "Введите номера телефонов через точку с запятой, или пустую строку если не хотите изменять данные:";
     private static final String MSG_UPDATE_CHANGEOK = "Данные клиента успешно изменены!";
 
+    private InputStream inStream;
+    private PrintStream outStream;
+
+    public ConsoleDialog(InputStream inStream, PrintStream outStream) {
+        this.inStream = inStream;
+        this.outStream = outStream;
+        if (inStream == null) {
+            throw new NullPointerException("Error: inStream is null!");
+        }
+        if (outStream == null) {
+            throw new NullPointerException("Error: outStream is null!");
+        }
+    }
+
+    private void out(Object message) {
+        outStream.println(message);
+    }
+
     public void processInput(ListClients listClients) {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inStream))) {
             String sInput;
-            //-- print hello
-            //Util.out("Органайзер загружен, найдено " + listClients.clients.size() + " клиентов");
-            Util.out(String.format(MSG_MENU_HELLO, listClients.clients.size()));
-            //-- process input
+            out(String.format(MSG_MENU_HELLO, listClients.clients.size()));
             while (true) {
-                //-- read input
-                Util.out(MSG_MENU_INPUT);
+                out(MSG_MENU_INPUT);
                 sInput = reader.readLine().trim().toLowerCase();
                 if (sInput.length() == 0) {
-                    Util.out(MSG_MENU_GOODBYE);
+                    out(MSG_MENU_GOODBYE);
                     break;
                 }
-                //-- process commands
                 if (sInput.startsWith(CMD_KEY_HELP)) printHelp();
                 else if (sInput.startsWith(CMD_KEY_LIST)) printList(listClients, sInput, reader);
                 else if (sInput.startsWith(CMD_KEY_DELETE)) deleteClient(listClients, sInput);
                 else if (sInput.startsWith(CMD_KEY_FIND)) findClientsByPhone(listClients, sInput);
                 else if (sInput.startsWith(CMD_KEY_INSERT)) insertClient(listClients, reader);
                 else if (sInput.startsWith(CMD_KEY_UPDATE)) updateClient(listClients, sInput, reader);
-                else Util.out(MSG_MENU_ERR_UNKNOWNCOMMAND);
+                else out(MSG_MENU_ERR_UNKNOWNCOMMAND);
             }
         }
         catch (Exception e) {
@@ -97,7 +112,7 @@ class ConsoleDialog {
     }
 
     private void printHelp() {
-        Util.out(MSG_HELP);
+        out(MSG_HELP);
     }
 
     private void printList(ListClients listClients, String sInput, BufferedReader reader) {
@@ -154,9 +169,9 @@ class ConsoleDialog {
         }
         //-- print clients list with paging
         for (int i = 0; i < localClients.size(); i++) {
-            Util.out(localClients.get(i));
+            out(localClients.get(i));
             if (i > 0 && (i + 1) % 10 == 0 && i < localClients.size() - 1) {
-                Util.out(MSG_LIST_PAGING);
+                out(MSG_LIST_PAGING);
                 try {
                     reader.readLine();
                 }
@@ -172,7 +187,7 @@ class ConsoleDialog {
         //-- parse input string
         String[] args = sInput.split(" ");
         if (args.length < 2) {
-            Util.out(MSG_ERR_DELETE_NOCLIENTNUMBER);
+            out(MSG_ERR_DELETE_NOCLIENTNUMBER);
             return;
         }
         int id;
@@ -180,31 +195,31 @@ class ConsoleDialog {
             id = Integer.parseInt(args[1]);
         }
         catch (Exception e) {
-            Util.out(MSG_ERR_DELETE_NOIDNUMBER);
+            out(MSG_ERR_DELETE_NOIDNUMBER);
             return;
         }
         //-- find client by id
         Client client = listClients.findClientById(id);
         if (client == null) {
-            Util.out(String.format(MSG_ERR__CLIENTNOTFOUND, id));
+            out(String.format(MSG_ERR__CLIENTNOTFOUND, id));
             return;
         }
         //-- delete client
         if (!listClients.clients.remove(client)) {
-            Util.out(String.format(MSG_ERR_DELETE_CANNOTDELETEFROMLIST, id));
+            out(String.format(MSG_ERR_DELETE_CANNOTDELETEFROMLIST, id));
             return;
         }
         //-- save changes
         listClients.saveData();
-        Util.out(client);
-        Util.out(String.format(MSG_DELETE_CLIENTDELETEDOK, id));
+        out(client);
+        out(String.format(MSG_DELETE_CLIENTDELETEDOK, id));
     }
 
     private void findClientsByPhone(ListClients listClients, String sInput) {
         //-- parse input string
         String[] args = sInput.split(" ");
         if (args.length < 2) {
-            Util.out(MSG_ERR_FIND_NOPHONENUMBERSPECIFIED);
+            out(MSG_ERR_FIND_NOPHONENUMBERSPECIFIED);
             return;
         }
         String phone = args[1];
@@ -218,7 +233,7 @@ class ConsoleDialog {
             for (String s : client.phones) {
                 if (s.contains(phone)) {
                     //if phone found then print client and go to next client
-                    Util.out(client);
+                    out(client);
                     break;
                 }
             }
@@ -228,25 +243,25 @@ class ConsoleDialog {
     private void insertClient(ListClients listClients, BufferedReader reader) {
         try {
             //-- input client data
-            Util.out(MSG_INSERT_CREATENEWCLIENT);
+            out(MSG_INSERT_CREATENEWCLIENT);
             Client client = new Client();
-            Util.out(MSG_INSERT_ENTER_NAME);
+            out(MSG_INSERT_ENTER_NAME);
             client.name = reader.readLine();
-            Util.out(MSG_INSERT_ENTER_POSITION);
+            out(MSG_INSERT_ENTER_POSITION);
             client.position = reader.readLine();
-            Util.out(MSG_INSERT_ENTER_ORGANISATION);
+            out(MSG_INSERT_ENTER_ORGANISATION);
             client.organisation = reader.readLine();
             while (true) {
-                Util.out(MSG_INSERT_ENTER_EMAIL);
+                out(MSG_INSERT_ENTER_EMAIL);
                 client.email = reader.readLine();
                 if (client.email.length() > 0 && !client.email.contains(MSG__EMAILKEY)) {
-                    Util.out(MSG_ERR__INVALIDEMAIL);
+                    out(MSG_ERR__INVALIDEMAIL);
                 }
                 else {
                     break;
                 }
             }
-            Util.out(MSG_INSERT_ENTER_PHONES);
+            out(MSG_INSERT_ENTER_PHONES);
             String phones = reader.readLine();
             if (phones.length() > 0) {
                 client.phones = phones.split(MSG__PHONESKEY);
@@ -266,12 +281,12 @@ class ConsoleDialog {
             //-- save data
             listClients.clients.add(client);
             listClients.saveData();
-            Util.out(client);
-            Util.out(MSG_INSERT_CLIENTCREATEDOK);
+            out(client);
+            out(MSG_INSERT_CLIENTCREATEDOK);
         }
         catch (Exception e) {
             e.printStackTrace();
-            Util.out(MSG_ERR_INSERT_CANNOTCREATECLIENT);
+            out(MSG_ERR_INSERT_CANNOTCREATECLIENT);
         }
     }
 
@@ -280,7 +295,7 @@ class ConsoleDialog {
             //-- parse input string
             String[] args = sInput.split(" ");
             if (args.length < 2) {
-                Util.out(MSG_ERR_UPDATE_NOCLIENTNUMBER);
+                out(MSG_ERR_UPDATE_NOCLIENTNUMBER);
                 return;
             }
             int id;
@@ -288,43 +303,43 @@ class ConsoleDialog {
                 id = Integer.parseInt(args[1]);
             }
             catch (Exception e) {
-                Util.out(MSG_ERR_UPDATE_PROVIDECLIENTNUMBER);
+                out(MSG_ERR_UPDATE_PROVIDECLIENTNUMBER);
                 return;
             }
             //-- find client by id
             Client client = listClients.findClientById(id);
             if (client == null) {
-                Util.out(String.format(MSG_ERR__CLIENTNOTFOUND, id));
+                out(String.format(MSG_ERR__CLIENTNOTFOUND, id));
                 return;
             }
             //-- update client data
             String s;
-            Util.out(MSG_UPDATE_CHANGECLIENTDATA);
-            Util.out(client);
-            Util.out(String.format(MSG_UPDATE_CURRENTNAME, client.name));
-            Util.out(MSG_UPDATE_ENTERNAME);
+            out(MSG_UPDATE_CHANGECLIENTDATA);
+            out(client);
+            out(String.format(MSG_UPDATE_CURRENTNAME, client.name));
+            out(MSG_UPDATE_ENTERNAME);
             s = reader.readLine();
             if (s.length() > 0) {
                 client.name = s;
             }
-            Util.out(String.format(MSG_UPDATE_CURRENTPOSITION, client.position));
-            Util.out(MSG_UPDATE_ENTERPOSITION);
+            out(String.format(MSG_UPDATE_CURRENTPOSITION, client.position));
+            out(MSG_UPDATE_ENTERPOSITION);
             s = reader.readLine();
             if (s.length() > 0) {
                 client.position = s;
             }
-            Util.out(String.format(MSG_UPDATE_CURRENTORGANISATION, client.organisation));
-            Util.out(MSG_UPDATE_ENTERORGANISATION);
+            out(String.format(MSG_UPDATE_CURRENTORGANISATION, client.organisation));
+            out(MSG_UPDATE_ENTERORGANISATION);
             s = reader.readLine();
             if (s.length() > 0) {
                 client.organisation = s;
             }
-            Util.out(String.format(MSG_UPDATE_CURRENTEMAIL, client.email));
+            out(String.format(MSG_UPDATE_CURRENTEMAIL, client.email));
             while (true) {
-                Util.out(MSG_UPDATE_ENTEREMAIL);
+                out(MSG_UPDATE_ENTEREMAIL);
                 s = reader.readLine();
                 if (s.length() > 0 && !s.contains(MSG__EMAILKEY)) {
-                    Util.out(MSG_ERR__INVALIDEMAIL);
+                    out(MSG_ERR__INVALIDEMAIL);
                 }
                 else {
                     break;
@@ -334,27 +349,27 @@ class ConsoleDialog {
                 client.email = s;
             }
             if (client.phones == null || client.phones.length < 1) {
-                Util.out(MSG_UPDATE_CURRENTNOPHONE);
+                out(MSG_UPDATE_CURRENTNOPHONE);
             }
             else if (client.phones.length == 1) {
-                Util.out(String.format(MSG_UPDATE_CURRENTPHONE, client.phones[0]));
+                out(String.format(MSG_UPDATE_CURRENTPHONE, client.phones[0]));
             }
             else {
-                Util.out(String.format(MSG_UPDATE_CURRENTPHONES, Arrays.toString(client.phones)));
+                out(String.format(MSG_UPDATE_CURRENTPHONES, Arrays.toString(client.phones)));
             }
-            Util.out(MSG_UPDATE_ENTERPHONES);
+            out(MSG_UPDATE_ENTERPHONES);
             s = reader.readLine();
             if (s.length() > 0) {
                 client.phones = s.split(MSG__PHONESKEY);
             }
             //-- save data
             listClients.saveData();
-            Util.out(client);
-            Util.out(MSG_UPDATE_CHANGEOK);
+            out(client);
+            out(MSG_UPDATE_CHANGEOK);
         }
         catch (Exception e) {
             e.printStackTrace();
-            Util.out(MSG_ERR_UPDATE_CANNOTUPDATE);
+            out(MSG_ERR_UPDATE_CANNOTUPDATE);
         }
     }
 }

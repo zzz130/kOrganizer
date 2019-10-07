@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,19 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ConsoleDialogTest {
     private ByteArrayOutputStream baOs;
-    private PrintStream oldOut;
-    private InputStream oldIn;
+    private PrintStream out;
     private String backupDataFileName;
 
     @BeforeEach
     void BeforeEach() {
-        //-- change output
+        //-- init output
         baOs = new ByteArrayOutputStream();
-        PrintStream psOut = new PrintStream(baOs);
-        oldOut = System.out;
-        System.setOut(psOut);
-        //-- change input
-        oldIn = System.in;
+        out = new PrintStream(baOs);
         //-- backup data file
         backupDataFileName = ListClients.CONFIG_DATAFILENAME + "_temp" + (1000 * Math.random()) + ".bak";
         try {
@@ -55,10 +49,6 @@ class ConsoleDialogTest {
 
     @AfterEach
     void AfterEach() {
-        //-- restore input and output
-        System.out.flush();
-        System.setOut(oldOut);
-        System.setIn(oldIn);
         //-- restore data file
         try {
             if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
@@ -81,13 +71,11 @@ class ConsoleDialogTest {
         String expectedString = "Органайзер загружен, найдено 20 клиентов" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "До свидания!" + Util.N;
-        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
-        (new ConsoleDialog()).processInput(listClients);
+        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
+                .processInput((new ListClients()).generateTestData());
         //-- assert results
-        System.out.flush();
+        out.flush();
         assertEquals(expectedString, baOs.toString());
     }
 
@@ -100,13 +88,11 @@ class ConsoleDialogTest {
                 "Ошибка: Неизвестная команда, введите help для вывода списка команд" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "До свидания!" + Util.N;
-        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
-        (new ConsoleDialog()).processInput(listClients);
+        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
+                .processInput((new ListClients()).generateTestData());
         //-- assert results
-        System.out.flush();
+        out.flush();
         assertEquals(expectedString, baOs.toString());
     }
 
@@ -127,13 +113,11 @@ class ConsoleDialogTest {
                 "find [телефон] - поиск клиентов по номеру телефона или части номера телефона" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "До свидания!" + Util.N;
-        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
-        (new ConsoleDialog()).processInput(listClients);
+        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
+                .processInput((new ListClients()).generateTestData());
         //-- assert results
-        System.out.flush();
+        out.flush();
         assertEquals(expectedString, baOs.toString());
     }
 
@@ -166,13 +150,11 @@ class ConsoleDialogTest {
                 "Клиент #20, ФИО 'Иванов20', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov20@uuu.ru', номер телефона отсутствует"  + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:"  + Util.N +
                 "До свидания!" + Util.N;
-        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
-        (new ConsoleDialog()).processInput(listClients);
+        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
+                .processInput((new ListClients()).generateTestData());
         //-- assert results
-        System.out.flush();
+        out.flush();
         assertEquals(expectedString, baOs.toString());
     }
 
@@ -205,13 +187,11 @@ class ConsoleDialogTest {
                 "Клиент #1, ФИО 'Иванов', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov@uuu.ru', номера телефонов [12-22, 13-31 спросить Степана]" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "До свидания!" + Util.N;
-        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
-        (new ConsoleDialog()).processInput(listClients);
+        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
+                .processInput((new ListClients()).generateTestData());
         //-- assert results
-        System.out.flush();
+        out.flush();
         assertEquals(expectedString, baOs.toString());
     }
 
@@ -387,11 +367,9 @@ class ConsoleDialogTest {
                 "        <email>ivanov20@uuu.ru</email>\n" +
                 "    </client>\n" +
                 "</clients>\n";
-        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
-        (new ConsoleDialog()).processInput(listClients);
+        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
+                .processInput((new ListClients()).generateTestData());
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
@@ -403,7 +381,7 @@ class ConsoleDialogTest {
             return;
         }
         //-- assert results
-        System.out.flush();
+        out.flush();
         assertEquals(expectedString, baOs.toString());
     }
 
@@ -419,13 +397,11 @@ class ConsoleDialogTest {
                 "'ivanov2@uuu.ru', номера телефонов [12-22, 13-33]" + Util.N +
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + Util.N +
                 "До свидания!" + Util.N;
-        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
-        (new ConsoleDialog()).processInput(listClients);
+        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
+                .processInput((new ListClients()).generateTestData());
         //-- assert results
-        System.out.flush();
+        out.flush();
         assertEquals(expectedString, baOs.toString());
     }
 
@@ -626,11 +602,9 @@ class ConsoleDialogTest {
                 "        <phone>122-1335</phone>\n" +
                 "    </client>\n" +
                 "</clients>\n";
-        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
-        (new ConsoleDialog()).processInput(listClients);
+        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
+                .processInput((new ListClients()).generateTestData());
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
@@ -642,7 +616,7 @@ class ConsoleDialogTest {
             return;
         }
         //-- assert results
-        System.out.flush();
+        out.flush();
         assertEquals(expectedString, baOs.toString());
     }
 
@@ -839,11 +813,9 @@ class ConsoleDialogTest {
                 "        <email>ivanov20@uuu.ru</email>\n" +
                 "    </client>\n" +
                 "</clients>\n";
-        System.setIn(new ByteArrayInputStream(testInput.getBytes()));
         //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
-        (new ConsoleDialog()).processInput(listClients);
+        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
+                .processInput((new ListClients()).generateTestData());
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
@@ -855,7 +827,7 @@ class ConsoleDialogTest {
             return;
         }
         //-- assert results
-        System.out.flush();
+        out.flush();
         assertEquals(expectedString, baOs.toString());
     }
 }
