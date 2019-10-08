@@ -50,14 +50,13 @@ public class ListClients {
         else {
             for (Client client : clients) {
                 sb.append(client);
-                sb.append(Util.N);
+                sb.append(System.getProperty("line.separator"));
             }
             }
         return sb.toString();
     }
 
     public LoadResult loadData() {
-        //TODO optimize try catch blocks to safe read line and etc.
         try {
             if (!Files.exists(Paths.get(CONFIG_DATAFILENAME))) {
                 return new LoadResult(true, MSG_ERR_NODATAFILE);

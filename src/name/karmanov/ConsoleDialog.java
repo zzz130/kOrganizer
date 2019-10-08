@@ -7,14 +7,15 @@ import java.io.PrintStream;
 import java.util.*;
 
 class ConsoleDialog {
-    private static final String MSG_HELP = "Команды:" + Util.N
-            + "help - вывод справки по командам органайзера" + Util.N
-            + "insert - добавить нового клиента" + Util.N
-            + "update [id] - редактировать клиента" + Util.N
-            + "delete [id] - удалить клиента с указанным номером" + Util.N
-            + "list - вывести список клиентов" + Util.N
+    private static final String RN = System.getProperty("line.separator");
+    private static final String MSG_HELP = "Команды:" + RN
+            + "help - вывод справки по командам органайзера" + RN
+            + "insert - добавить нового клиента" + RN
+            + "update [id] - редактировать клиента" + RN
+            + "delete [id] - удалить клиента с указанным номером" + RN
+            + "list - вывести список клиентов" + RN
             + "list [номер;фио;должность;организация;email;телефон] - вывести список клиентов, "
-            + "сортируя по указанным полям, '-' для сортировки в обратном порядке)" + Util.N
+            + "сортируя по указанным полям, '-' для сортировки в обратном порядке)" + RN
             + "find [телефон] - поиск клиентов по номеру телефона или части номера телефона";
     private static final String MSG_MENU_HELLO = "Органайзер загружен, найдено %d клиентов";
     private static final String MSG_MENU_INPUT = ">> Введите команду и нажмите Enter, для выхода введите пустую строку:";
@@ -67,6 +68,8 @@ class ConsoleDialog {
     private static final String MSG_UPDATE_ENTEREMAIL = "Введите новый e-mail или пустую строку если не хотите изменять информацию:";
     private static final String MSG_UPDATE_ENTERPHONES = "Введите номера телефонов через точку с запятой, или пустую строку если не хотите изменять данные:";
     private static final String MSG_UPDATE_CHANGEOK = "Данные клиента успешно изменены!";
+    private static final String MSG_ERR_CONSTRUCTOR_INSTREAMNULL = "Error: inStream is null!";
+    private static final String MSG_ERR_CONSTRUCTOR_OUTSTREAMNULL = "Error: outStream is null!";
 
     private InputStream inStream;
     private PrintStream outStream;
@@ -75,15 +78,24 @@ class ConsoleDialog {
         this.inStream = inStream;
         this.outStream = outStream;
         if (inStream == null) {
-            throw new NullPointerException("Error: inStream is null!");
+            throw new NullPointerException(MSG_ERR_CONSTRUCTOR_INSTREAMNULL);
         }
         if (outStream == null) {
-            throw new NullPointerException("Error: outStream is null!");
+            throw new NullPointerException(MSG_ERR_CONSTRUCTOR_OUTSTREAMNULL);
         }
     }
 
     private void out(Object message) {
         outStream.println(message);
+    }
+    private String safeReadLine(BufferedReader reader) {
+        try {
+            return reader.readLine();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     public void processInput(ListClients listClients) {
@@ -92,7 +104,7 @@ class ConsoleDialog {
             out(String.format(MSG_MENU_HELLO, listClients.clients.size()));
             while (true) {
                 out(MSG_MENU_INPUT);
-                sInput = reader.readLine().trim().toLowerCase();
+                sInput = safeReadLine(reader).trim().toLowerCase();
                 if (sInput.length() == 0) {
                     out(MSG_MENU_GOODBYE);
                     break;
@@ -172,13 +184,7 @@ class ConsoleDialog {
             out(localClients.get(i));
             if (i > 0 && (i + 1) % 10 == 0 && i < localClients.size() - 1) {
                 out(MSG_LIST_PAGING);
-                try {
-                    reader.readLine();
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
+                safeReadLine(reader);
             }
         }
     }
@@ -246,14 +252,14 @@ class ConsoleDialog {
             out(MSG_INSERT_CREATENEWCLIENT);
             Client client = new Client();
             out(MSG_INSERT_ENTER_NAME);
-            client.name = reader.readLine();
+            client.name = safeReadLine(reader);
             out(MSG_INSERT_ENTER_POSITION);
-            client.position = reader.readLine();
+            client.position = safeReadLine(reader);
             out(MSG_INSERT_ENTER_ORGANISATION);
-            client.organisation = reader.readLine();
+            client.organisation = safeReadLine(reader);
             while (true) {
                 out(MSG_INSERT_ENTER_EMAIL);
-                client.email = reader.readLine();
+                client.email = safeReadLine(reader);
                 if (client.email.length() > 0 && !client.email.contains(MSG__EMAILKEY)) {
                     out(MSG_ERR__INVALIDEMAIL);
                 }
@@ -262,7 +268,7 @@ class ConsoleDialog {
                 }
             }
             out(MSG_INSERT_ENTER_PHONES);
-            String phones = reader.readLine();
+            String phones = safeReadLine(reader);
             if (phones.length() > 0) {
                 client.phones = phones.split(MSG__PHONESKEY);
             }
@@ -318,26 +324,26 @@ class ConsoleDialog {
             out(client);
             out(String.format(MSG_UPDATE_CURRENTNAME, client.name));
             out(MSG_UPDATE_ENTERNAME);
-            s = reader.readLine();
+            s = safeReadLine(reader);
             if (s.length() > 0) {
                 client.name = s;
             }
             out(String.format(MSG_UPDATE_CURRENTPOSITION, client.position));
             out(MSG_UPDATE_ENTERPOSITION);
-            s = reader.readLine();
+            s = safeReadLine(reader);
             if (s.length() > 0) {
                 client.position = s;
             }
             out(String.format(MSG_UPDATE_CURRENTORGANISATION, client.organisation));
             out(MSG_UPDATE_ENTERORGANISATION);
-            s = reader.readLine();
+            s = safeReadLine(reader);
             if (s.length() > 0) {
                 client.organisation = s;
             }
             out(String.format(MSG_UPDATE_CURRENTEMAIL, client.email));
             while (true) {
                 out(MSG_UPDATE_ENTEREMAIL);
-                s = reader.readLine();
+                s = safeReadLine(reader);
                 if (s.length() > 0 && !s.contains(MSG__EMAILKEY)) {
                     out(MSG_ERR__INVALIDEMAIL);
                 }
@@ -358,7 +364,7 @@ class ConsoleDialog {
                 out(String.format(MSG_UPDATE_CURRENTPHONES, Arrays.toString(client.phones)));
             }
             out(MSG_UPDATE_ENTERPHONES);
-            s = reader.readLine();
+            s = safeReadLine(reader);
             if (s.length() > 0) {
                 client.phones = s.split(MSG__PHONESKEY);
             }
