@@ -20,6 +20,24 @@ public class ListClients {
     private static final String MSG_ERR_NODATAINFILE = "Ошибка: Данные в файле не найдены";
     private static final String MSG_ERR_NOCLIENTRECORDS= "Ошибка: Записи о клиентах отсутствуют";
 
+    public class LoadResult {
+        private boolean result;
+        private String message;
+
+        public LoadResult(boolean result, String message) {
+            this.result = result;
+            this.message = message;
+        }
+
+        public boolean isResult() {
+            return result;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
+
     @XmlElement(name = "client")
     public ArrayList<Client> clients = new ArrayList<>();
 
@@ -38,37 +56,11 @@ public class ListClients {
         return sb.toString();
     }
 
-    public ListClients generateTestData() {
-        Client client;
-        client = new Client();
-        client.id = 1;
-        client.name = "Иванов";
-        client.position = "Инженер";
-        client.organisation = "ООО \"УУУ\"";
-        client.email = "ivanov@uuu.ru";
-        clients.add(client);
-        for (int i = 2; i <= 20; i++) {
-            client = new Client();
-            client.id = i;
-            client.name = "Иванов" + i;
-            client.position = "Инженер";
-            client.organisation = "ООО \"УУУ\"";
-            client.email = "ivanov" + i + "@uuu.ru";
-            clients.add(client);
-        }
-        clients.get(0).phones = new String[] {"12-22", "13-31 спросить Степана"};
-        clients.get(1).phones = new String[] {"12-22", "13-33"};
-        clients.get(2).phones = new String[] {"4611"};
-        return this;
-    }
-
-    public boolean loadData(String errorMessage) {
-        //TODO set error message to local var
+    public LoadResult loadData() {
         //TODO optimize try catch blocks to safe read line and etc.
         try {
             if (!Files.exists(Paths.get(CONFIG_DATAFILENAME))) {
-                errorMessage = MSG_ERR_NODATAFILE;
-                return true;
+                return new LoadResult(true, MSG_ERR_NODATAFILE);
             }
             JAXBContext context = JAXBContext.newInstance(ListClients.class);
             Unmarshaller unMarshaller = context.createUnmarshaller();
@@ -80,20 +72,18 @@ public class ListClients {
                 e.printStackTrace();
             }
             if (listClients == null) {
-                errorMessage = MSG_ERR_NODATAINFILE;
-                return true;
+                return new LoadResult(true, MSG_ERR_NODATAINFILE);
             }
             if (listClients.clients == null || listClients.clients.size() < 1) {
-                errorMessage = MSG_ERR_NOCLIENTRECORDS;
-                return true;
+                return new LoadResult(true, MSG_ERR_NOCLIENTRECORDS);
             }
             this.clients = listClients.clients;
         }
         catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return new LoadResult(false, "");
         }
-        return true;
+        return new LoadResult(true, "");
     }
 
     public void saveData() {

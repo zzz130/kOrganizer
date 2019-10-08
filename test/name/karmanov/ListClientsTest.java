@@ -6,11 +6,40 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//TODO clear strings to constants
+//TODO clear unused imports
+
 class ListClientsTest {
     private String backupDataFileName;
+
+    public static ListClients generateTestData(ListClients listClients) {
+        Client client;
+        ArrayList<Client> clients = listClients.clients;
+        client = new Client();
+        client.id = 1;
+        client.name = "Иванов";
+        client.position = "Инженер";
+        client.organisation = "ООО \"УУУ\"";
+        client.email = "ivanov@uuu.ru";
+        clients.add(client);
+        for (int i = 2; i <= 20; i++) {
+            client = new Client();
+            client.id = i;
+            client.name = "Иванов" + i;
+            client.position = "Инженер";
+            client.organisation = "ООО \"УУУ\"";
+            client.email = "ivanov" + i + "@uuu.ru";
+            clients.add(client);
+        }
+        clients.get(0).phones = new String[] {"12-22", "13-31 спросить Степана"};
+        clients.get(1).phones = new String[] {"12-22", "13-33"};
+        clients.get(2).phones = new String[] {"4611"};
+        return listClients;
+    }
 
     @BeforeEach
     void BeforeEach() {
@@ -58,8 +87,6 @@ class ListClientsTest {
 
     @Test
     void testToString() {
-        ListClients listClients = new ListClients();
-        listClients.generateTestData();
         String expectedString = "Клиент #1, ФИО 'Иванов', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov@uuu.ru', номера телефонов [12-22, 13-31 спросить Степана]" + Util.N +
                 "Клиент #2, ФИО 'Иванов2', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov2@uuu.ru', номера телефонов [12-22, 13-33]" + Util.N +
                 "Клиент #3, ФИО 'Иванов3', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov3@uuu.ru', номер телефона [4611]" + Util.N +
@@ -80,6 +107,8 @@ class ListClientsTest {
                 "Клиент #18, ФИО 'Иванов18', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov18@uuu.ru', номер телефона отсутствует" + Util.N +
                 "Клиент #19, ФИО 'Иванов19', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov19@uuu.ru', номер телефона отсутствует" + Util.N +
                 "Клиент #20, ФИО 'Иванов20', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov20@uuu.ru', номер телефона отсутствует" + Util.N;
+        ListClients listClients = new ListClients();
+        ListClientsTest.generateTestData(listClients);
         assertEquals(expectedString, listClients.toString());
     }
 
@@ -237,14 +266,13 @@ class ListClientsTest {
                 "</clients>\n";
         //-- perform testing
         ListClients listClients = new ListClients();
-        listClients.generateTestData();
+        ListClientsTest.generateTestData(listClients);
         listClients.saveData();
         ListClients listClients2 = new ListClients();
-        String errorMessage = "";
-        boolean bResult = listClients2.loadData(errorMessage);
-        assertTrue(bResult);
-        assertEquals(expectedLoadMessage, errorMessage);
-        if (!bResult) {
+        ListClients.LoadResult loadResult = listClients2.loadData();
+        assertTrue(loadResult.isResult());
+        assertEquals(expectedLoadMessage, loadResult.getMessage());
+        if (!loadResult.isResult()) {
             return;
         }
         assertEquals(listClients.toString(), listClients2.toString());
@@ -260,11 +288,60 @@ class ListClientsTest {
     }
 
     @Test
+    void LoadDataZeroClients() {
+        //-- prepare testing
+        String expectedLoadMessage = "Ошибка: Записи о клиентах отсутствуют";
+        String expectedFileContents = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                "<clients/>\n";
+        //-- perform testing
+        ListClients listClients = new ListClients();
+        listClients.saveData();
+        ListClients listClients2 = new ListClients();
+        ListClients.LoadResult loadResult = listClients2.loadData();
+        assertTrue(loadResult.isResult());
+        assertEquals(expectedLoadMessage, loadResult.getMessage());
+        if (!loadResult.isResult()) {
+            return;
+        }
+        assertEquals(listClients.toString(), listClients2.toString());
+        //-- read created data file
+        try {
+            String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
+            assertEquals(expectedFileContents, sFileData);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            assertTrue(Boolean.FALSE);
+        }
+    }
+
+    @Test
+    void LoadDataNoDataFile() {
+        //-- prepare testing
+        String expectedLoadMessage = "Ошибка: Файл данных отсутствует";
+        //-- delete data file
+        try {
+            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
+                Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            assertTrue(Boolean.FALSE);
+        }
+        //-- perform testing
+        ListClients listClients = new ListClients();
+        ListClients.LoadResult loadResult = listClients.loadData();
+        assertTrue(loadResult.isResult());
+        assertEquals(expectedLoadMessage, loadResult.getMessage());
+    }
+
+    @Test
     void findClientById() {
         String expectedString = "Клиент #2, ФИО 'Иванов2', Должность 'Инженер', Организация 'ООО \"УУУ\"',"
                 + " e-mail 'ivanov2@uuu.ru', номера телефонов [12-22, 13-33]";
         ListClients listClients = new ListClients();
-        listClients.generateTestData();
+        ListClientsTest.generateTestData(listClients);
         Client client = listClients.findClientById(2);
         assertEquals(expectedString, client.toString());
     }

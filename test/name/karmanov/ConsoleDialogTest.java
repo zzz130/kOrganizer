@@ -73,7 +73,7 @@ class ConsoleDialogTest {
                 "До свидания!" + Util.N;
         //-- perform testing
         (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput((new ListClients()).generateTestData());
+                .processInput(ListClientsTest.generateTestData(new ListClients()));
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -90,7 +90,7 @@ class ConsoleDialogTest {
                 "До свидания!" + Util.N;
         //-- perform testing
         (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput((new ListClients()).generateTestData());
+                .processInput(ListClientsTest.generateTestData(new ListClients()));
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -115,7 +115,7 @@ class ConsoleDialogTest {
                 "До свидания!" + Util.N;
         //-- perform testing
         (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput((new ListClients()).generateTestData());
+                .processInput(ListClientsTest.generateTestData(new ListClients()));
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -152,7 +152,7 @@ class ConsoleDialogTest {
                 "До свидания!" + Util.N;
         //-- perform testing
         (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput((new ListClients()).generateTestData());
+                .processInput(ListClientsTest.generateTestData(new ListClients()));
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -189,7 +189,7 @@ class ConsoleDialogTest {
                 "До свидания!" + Util.N;
         //-- perform testing
         (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput((new ListClients()).generateTestData());
+                .processInput(ListClientsTest.generateTestData(new ListClients()));
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -369,7 +369,7 @@ class ConsoleDialogTest {
                 "</clients>\n";
         //-- perform testing
         (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput((new ListClients()).generateTestData());
+                .processInput(ListClientsTest.generateTestData(new ListClients()));
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
@@ -399,7 +399,7 @@ class ConsoleDialogTest {
                 "До свидания!" + Util.N;
         //-- perform testing
         (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput((new ListClients()).generateTestData());
+                .processInput(ListClientsTest.generateTestData(new ListClients()));
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -604,7 +604,7 @@ class ConsoleDialogTest {
                 "</clients>\n";
         //-- perform testing
         (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput((new ListClients()).generateTestData());
+                .processInput(ListClientsTest.generateTestData(new ListClients()));
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
@@ -815,7 +815,7 @@ class ConsoleDialogTest {
                 "</clients>\n";
         //-- perform testing
         (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput((new ListClients()).generateTestData());
+                .processInput(ListClientsTest.generateTestData(new ListClients()));
         //-- read created data file
         try {
             String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
