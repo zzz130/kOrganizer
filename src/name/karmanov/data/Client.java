@@ -1,4 +1,4 @@
-package name.karmanov;
+package name.karmanov.data;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package name.karmanov;
+package name.karmanov.data;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

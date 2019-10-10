@@ -1,5 +1,9 @@
-package name.karmanov;
+package name.karmanov.presentation;
 
+import name.karmanov.OrganizerDataTest;
+import name.karmanov.data.OrganizerData;
+import name.karmanov.presentation.ConsoleDialog;
+import name.karmanov.storage.FileStorage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,10 +28,10 @@ class ConsoleDialogTest {
         baOs = new ByteArrayOutputStream();
         out = new PrintStream(baOs);
         //-- backup data file
-        backupDataFileName = ListClients.CONFIG_DATAFILENAME + "_temp" + (1000 * Math.random()) + ".bak";
+        backupDataFileName = FileStorage.CONFIG_DATAFILENAME + "_temp" + (1000 * Math.random()) + ".bak";
         try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.move(Paths.get(ListClients.CONFIG_DATAFILENAME), Paths.get(backupDataFileName));
+            if (Files.exists(Paths.get(FileStorage.CONFIG_DATAFILENAME))){
+                Files.move(Paths.get(FileStorage.CONFIG_DATAFILENAME), Paths.get(backupDataFileName));
             }
         }
         catch (Exception e) {
@@ -35,11 +39,11 @@ class ConsoleDialogTest {
             assertTrue(Boolean.FALSE);
             try {
                 //-- restore data file
-                if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                    Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
+                if (Files.exists(Paths.get(FileStorage.CONFIG_DATAFILENAME))){
+                    Files.delete(Paths.get(FileStorage.CONFIG_DATAFILENAME));
                 }
                 if (Files.exists(Paths.get(backupDataFileName))){
-                    Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
+                    Files.move(Paths.get(backupDataFileName), Paths.get(FileStorage.CONFIG_DATAFILENAME));
                 }
             }
             catch (Exception ee) {
@@ -52,11 +56,11 @@ class ConsoleDialogTest {
     void AfterEach() {
         //-- restore data file
         try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
+            if (Files.exists(Paths.get(FileStorage.CONFIG_DATAFILENAME))){
+                Files.delete(Paths.get(FileStorage.CONFIG_DATAFILENAME));
             }
             if (Files.exists(Paths.get(backupDataFileName))){
-                Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
+                Files.move(Paths.get(backupDataFileName), Paths.get(FileStorage.CONFIG_DATAFILENAME));
             }
         }
         catch (Exception e) {
@@ -73,8 +77,8 @@ class ConsoleDialogTest {
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + RN +
                 "До свидания!" + RN;
         //-- perform testing
-        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput(ListClientsTest.generateTestData(new ListClients()));
+        new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out
+                , OrganizerDataTest.generateTestData(new OrganizerData())).run();
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -90,8 +94,8 @@ class ConsoleDialogTest {
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + RN +
                 "До свидания!" + RN;
         //-- perform testing
-        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput(ListClientsTest.generateTestData(new ListClients()));
+        new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out
+                , OrganizerDataTest.generateTestData(new OrganizerData())).run();
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -115,8 +119,8 @@ class ConsoleDialogTest {
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + RN +
                 "До свидания!" + RN;
         //-- perform testing
-        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput(ListClientsTest.generateTestData(new ListClients()));
+        new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out
+                , OrganizerDataTest.generateTestData(new OrganizerData())).run();
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -152,8 +156,8 @@ class ConsoleDialogTest {
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:"  + RN +
                 "До свидания!" + RN;
         //-- perform testing
-        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput(ListClientsTest.generateTestData(new ListClients()));
+        new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out
+                , OrganizerDataTest.generateTestData(new OrganizerData())).run();
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -189,8 +193,8 @@ class ConsoleDialogTest {
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + RN +
                 "До свидания!" + RN;
         //-- perform testing
-        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput(ListClientsTest.generateTestData(new ListClients()));
+        new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out
+                , OrganizerDataTest.generateTestData(new OrganizerData())).run();
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -369,11 +373,11 @@ class ConsoleDialogTest {
                 "    </client>\n" +
                 "</clients>\n";
         //-- perform testing
-        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput(ListClientsTest.generateTestData(new ListClients()));
+        new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out
+                , OrganizerDataTest.generateTestData(new OrganizerData())).run();
         //-- read created data file
         try {
-            String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
+            String sFileData = new String(Files.readAllBytes(Paths.get(FileStorage.CONFIG_DATAFILENAME)));
             assertEquals(expectedFileContents, sFileData);
         }
         catch (Exception e) {
@@ -399,8 +403,8 @@ class ConsoleDialogTest {
                 ">> Введите команду и нажмите Enter, для выхода введите пустую строку:" + RN +
                 "До свидания!" + RN;
         //-- perform testing
-        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput(ListClientsTest.generateTestData(new ListClients()));
+        new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out
+                , OrganizerDataTest.generateTestData(new OrganizerData())).run();
         //-- assert results
         out.flush();
         assertEquals(expectedString, baOs.toString());
@@ -604,11 +608,11 @@ class ConsoleDialogTest {
                 "    </client>\n" +
                 "</clients>\n";
         //-- perform testing
-        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput(ListClientsTest.generateTestData(new ListClients()));
+        new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out
+                , OrganizerDataTest.generateTestData(new OrganizerData())).run();
         //-- read created data file
         try {
-            String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
+            String sFileData = new String(Files.readAllBytes(Paths.get(FileStorage.CONFIG_DATAFILENAME)));
             assertEquals(expectedFileContents, sFileData);
         }
         catch (Exception e) {
@@ -815,11 +819,11 @@ class ConsoleDialogTest {
                 "    </client>\n" +
                 "</clients>\n";
         //-- perform testing
-        (new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out))
-                .processInput(ListClientsTest.generateTestData(new ListClients()));
+        new ConsoleDialog(new ByteArrayInputStream(testInput.getBytes()), out
+                , OrganizerDataTest.generateTestData(new OrganizerData())).run();
         //-- read created data file
         try {
-            String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
+            String sFileData = new String(Files.readAllBytes(Paths.get(FileStorage.CONFIG_DATAFILENAME)));
             assertEquals(expectedFileContents, sFileData);
         }
         catch (Exception e) {

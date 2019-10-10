@@ -1,51 +1,26 @@
-package name.karmanov;
+package name.karmanov.storage;
 
+import name.karmanov.OrganizerDataTest;
+import name.karmanov.data.OrganizerData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ListClientsTest {
-    private static final String RN = System.getProperty("line.separator");
+class FileStorageTest {
     private String backupDataFileName;
-
-    public static ListClients generateTestData(ListClients listClients) {
-        Client client;
-        ArrayList<Client> clients = listClients.clients;
-        client = new Client();
-        client.id = 1;
-        client.name = "Иванов";
-        client.position = "Инженер";
-        client.organisation = "ООО \"УУУ\"";
-        client.email = "ivanov@uuu.ru";
-        clients.add(client);
-        for (int i = 2; i <= 20; i++) {
-            client = new Client();
-            client.id = i;
-            client.name = "Иванов" + i;
-            client.position = "Инженер";
-            client.organisation = "ООО \"УУУ\"";
-            client.email = "ivanov" + i + "@uuu.ru";
-            clients.add(client);
-        }
-        clients.get(0).phones = new String[] {"12-22", "13-31 спросить Степана"};
-        clients.get(1).phones = new String[] {"12-22", "13-33"};
-        clients.get(2).phones = new String[] {"4611"};
-        return listClients;
-    }
 
     @BeforeEach
     void BeforeEach() {
         //-- backup data file
-        backupDataFileName = ListClients.CONFIG_DATAFILENAME + "_temp" + (1000 * Math.random()) + ".bak";
+        backupDataFileName = FileStorage.CONFIG_DATAFILENAME + "_temp" + (1000 * Math.random()) + ".bak";
         try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.move(Paths.get(ListClients.CONFIG_DATAFILENAME), Paths.get(backupDataFileName));
+            if (Files.exists(Paths.get(FileStorage.CONFIG_DATAFILENAME))){
+                Files.move(Paths.get(FileStorage.CONFIG_DATAFILENAME), Paths.get(backupDataFileName));
             }
         }
         catch (Exception e) {
@@ -53,11 +28,11 @@ class ListClientsTest {
             assertTrue(Boolean.FALSE);
             try {
                 //-- restore data file
-                if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                    Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
+                if (Files.exists(Paths.get(FileStorage.CONFIG_DATAFILENAME))){
+                    Files.delete(Paths.get(FileStorage.CONFIG_DATAFILENAME));
                 }
                 if (Files.exists(Paths.get(backupDataFileName))){
-                    Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
+                    Files.move(Paths.get(backupDataFileName), Paths.get(FileStorage.CONFIG_DATAFILENAME));
                 }
             }
             catch (Exception ee) {
@@ -70,44 +45,17 @@ class ListClientsTest {
     void AfterEach() {
         //-- restore data file
         try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
+            if (Files.exists(Paths.get(FileStorage.CONFIG_DATAFILENAME))){
+                Files.delete(Paths.get(FileStorage.CONFIG_DATAFILENAME));
             }
             if (Files.exists(Paths.get(backupDataFileName))){
-                Files.move(Paths.get(backupDataFileName), Paths.get(ListClients.CONFIG_DATAFILENAME));
+                Files.move(Paths.get(backupDataFileName), Paths.get(FileStorage.CONFIG_DATAFILENAME));
             }
         }
         catch (Exception e) {
             e.printStackTrace();
             assertTrue(Boolean.FALSE);
         }
-    }
-
-    @Test
-    void testToString() {
-        String expectedString = "Клиент #1, ФИО 'Иванов', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov@uuu.ru', номера телефонов [12-22, 13-31 спросить Степана]" + RN +
-                "Клиент #2, ФИО 'Иванов2', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov2@uuu.ru', номера телефонов [12-22, 13-33]" + RN +
-                "Клиент #3, ФИО 'Иванов3', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov3@uuu.ru', номер телефона [4611]" + RN +
-                "Клиент #4, ФИО 'Иванов4', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov4@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #5, ФИО 'Иванов5', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov5@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #6, ФИО 'Иванов6', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov6@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #7, ФИО 'Иванов7', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov7@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #8, ФИО 'Иванов8', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov8@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #9, ФИО 'Иванов9', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov9@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #10, ФИО 'Иванов10', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov10@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #11, ФИО 'Иванов11', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov11@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #12, ФИО 'Иванов12', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov12@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #13, ФИО 'Иванов13', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov13@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #14, ФИО 'Иванов14', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov14@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #15, ФИО 'Иванов15', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov15@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #16, ФИО 'Иванов16', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov16@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #17, ФИО 'Иванов17', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov17@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #18, ФИО 'Иванов18', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov18@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #19, ФИО 'Иванов19', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov19@uuu.ru', номер телефона отсутствует" + RN +
-                "Клиент #20, ФИО 'Иванов20', Должность 'Инженер', Организация 'ООО \"УУУ\"', e-mail 'ivanov20@uuu.ru', номер телефона отсутствует" + RN;
-        ListClients listClients = new ListClients();
-        ListClientsTest.generateTestData(listClients);
-        assertEquals(expectedString, listClients.toString());
     }
 
     @Test
@@ -263,20 +211,19 @@ class ListClientsTest {
                 "    </client>\n" +
                 "</clients>\n";
         //-- perform testing
-        ListClients listClients = new ListClients();
-        ListClientsTest.generateTestData(listClients);
-        listClients.saveData();
-        ListClients listClients2 = new ListClients();
-        ListClients.LoadResult loadResult = listClients2.loadData();
-        assertTrue(loadResult.isResult());
-        assertEquals(expectedLoadMessage, loadResult.getMessage());
-        if (!loadResult.isResult()) {
+        OrganizerData organizerData = OrganizerDataTest.generateTestData(new OrganizerData());
+        FileStorage.saveData(organizerData);
+        FileStorage.Container storageContainer = FileStorage.loadData();
+        OrganizerData organizerData2 = storageContainer.getOrganizerData();
+        assertTrue(storageContainer.isLoadResult());
+        assertEquals(expectedLoadMessage, storageContainer.getMessage());
+        if (!storageContainer.isLoadResult()) {
             return;
         }
-        assertEquals(listClients.toString(), listClients2.toString());
+        assertEquals(organizerData.toString(), organizerData2.toString());
         //-- read created data file
         try {
-            String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
+            String sFileData = new String(Files.readAllBytes(Paths.get(FileStorage.CONFIG_DATAFILENAME)));
             assertEquals(expectedFileContents, sFileData);
         }
         catch (Exception e) {
@@ -292,19 +239,19 @@ class ListClientsTest {
         String expectedFileContents = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<clients/>\n";
         //-- perform testing
-        ListClients listClients = new ListClients();
-        listClients.saveData();
-        ListClients listClients2 = new ListClients();
-        ListClients.LoadResult loadResult = listClients2.loadData();
-        assertTrue(loadResult.isResult());
-        assertEquals(expectedLoadMessage, loadResult.getMessage());
-        if (!loadResult.isResult()) {
+        OrganizerData organizerData = new OrganizerData();
+        FileStorage.saveData(organizerData);
+        FileStorage.Container storageContainer = FileStorage.loadData();
+        OrganizerData organizerData2 = storageContainer.getOrganizerData();
+        assertTrue(storageContainer.isLoadResult());
+        assertEquals(expectedLoadMessage, storageContainer.getMessage());
+        if (!storageContainer.isLoadResult()) {
             return;
         }
-        assertEquals(listClients.toString(), listClients2.toString());
+        assertEquals(organizerData.toString(), organizerData2.toString());
         //-- read created data file
         try {
-            String sFileData = new String(Files.readAllBytes(Paths.get(ListClients.CONFIG_DATAFILENAME)));
+            String sFileData = new String(Files.readAllBytes(Paths.get(FileStorage.CONFIG_DATAFILENAME)));
             assertEquals(expectedFileContents, sFileData);
         }
         catch (Exception e) {
@@ -319,8 +266,8 @@ class ListClientsTest {
         String expectedLoadMessage = "Ошибка: Файл данных отсутствует";
         //-- delete data file
         try {
-            if (Files.exists(Paths.get(ListClients.CONFIG_DATAFILENAME))){
-                Files.delete(Paths.get(ListClients.CONFIG_DATAFILENAME));
+            if (Files.exists(Paths.get(FileStorage.CONFIG_DATAFILENAME))){
+                Files.delete(Paths.get(FileStorage.CONFIG_DATAFILENAME));
             }
         }
         catch (Exception e) {
@@ -328,19 +275,8 @@ class ListClientsTest {
             assertTrue(Boolean.FALSE);
         }
         //-- perform testing
-        ListClients listClients = new ListClients();
-        ListClients.LoadResult loadResult = listClients.loadData();
-        assertTrue(loadResult.isResult());
-        assertEquals(expectedLoadMessage, loadResult.getMessage());
-    }
-
-    @Test
-    void findClientById() {
-        String expectedString = "Клиент #2, ФИО 'Иванов2', Должность 'Инженер', Организация 'ООО \"УУУ\"',"
-                + " e-mail 'ivanov2@uuu.ru', номера телефонов [12-22, 13-33]";
-        ListClients listClients = new ListClients();
-        ListClientsTest.generateTestData(listClients);
-        Client client = listClients.findClientById(2);
-        assertEquals(expectedString, client.toString());
+        FileStorage.Container storageContainer = FileStorage.loadData();
+        assertTrue(storageContainer.isLoadResult());
+        assertEquals(expectedLoadMessage, storageContainer.getMessage());
     }
 }

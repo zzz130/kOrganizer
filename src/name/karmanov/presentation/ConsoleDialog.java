@@ -1,4 +1,8 @@
-package name.karmanov;
+package name.karmanov.presentation;
+
+import name.karmanov.data.Client;
+import name.karmanov.data.OrganizerData;
+import name.karmanov.storage.FileStorage;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -6,7 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.*;
 
-class ConsoleDialog {
+public class ConsoleDialog {
     private static final String RN = System.getProperty("line.separator");
     private static final String MSG_HELP = "Команды:" + RN
             + "help - вывод справки по командам органайзера" + RN
@@ -73,10 +77,13 @@ class ConsoleDialog {
 
     private InputStream inStream;
     private PrintStream outStream;
+    private OrganizerData organizerData;
+    private BufferedReader reader;
 
-    public ConsoleDialog(InputStream inStream, PrintStream outStream) {
+    public ConsoleDialog(InputStream inStream, PrintStream outStream, OrganizerData organizerData) {
         this.inStream = inStream;
         this.outStream = outStream;
+        this.organizerData = organizerData;
         if (inStream == null) {
             throw new NullPointerException(MSG_ERR_CONSTRUCTOR_INSTREAMNULL);
         }
@@ -88,7 +95,8 @@ class ConsoleDialog {
     private void out(Object message) {
         outStream.println(message);
     }
-    private String safeReadLine(BufferedReader reader) {
+
+    private String safeReadLine() {
         try {
             return reader.readLine();
         }
@@ -98,28 +106,32 @@ class ConsoleDialog {
         }
     }
 
-    public void processInput(ListClients listClients) {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inStream))) {
-            String sInput;
-            out(String.format(MSG_MENU_HELLO, listClients.clients.size()));
+    public void run() {
+        try {
+            reader = new BufferedReader(new InputStreamReader(inStream));
+            String inputString;
+            out(String.format(MSG_MENU_HELLO, organizerData.clients.size()));
             while (true) {
                 out(MSG_MENU_INPUT);
-                sInput = safeReadLine(reader).trim().toLowerCase();
-                if (sInput.length() == 0) {
+                inputString = safeReadLine().trim().toLowerCase();
+                if (inputString.length() == 0) {
                     out(MSG_MENU_GOODBYE);
                     break;
                 }
-                if (sInput.startsWith(CMD_KEY_HELP)) printHelp();
-                else if (sInput.startsWith(CMD_KEY_LIST)) printList(listClients, sInput, reader);
-                else if (sInput.startsWith(CMD_KEY_DELETE)) deleteClient(listClients, sInput);
-                else if (sInput.startsWith(CMD_KEY_FIND)) findClientsByPhone(listClients, sInput);
-                else if (sInput.startsWith(CMD_KEY_INSERT)) insertClient(listClients, reader);
-                else if (sInput.startsWith(CMD_KEY_UPDATE)) updateClient(listClients, sInput, reader);
+                if (inputString.startsWith(CMD_KEY_HELP)) printHelp();
+                else if (inputString.startsWith(CMD_KEY_LIST)) printList(inputString);
+                else if (inputString.startsWith(CMD_KEY_DELETE)) deleteClient(inputString);
+                else if (inputString.startsWith(CMD_KEY_FIND)) findClientsByPhone(inputString);
+                else if (inputString.startsWith(CMD_KEY_INSERT)) insertClient();
+                else if (inputString.startsWith(CMD_KEY_UPDATE)) updateClient(inputString);
                 else out(MSG_MENU_ERR_UNKNOWNCOMMAND);
             }
         }
         catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            try {reader.close();} catch (Exception e) {}
         }
     }
 
@@ -127,16 +139,17 @@ class ConsoleDialog {
         out(MSG_HELP);
     }
 
-    private void printList(ListClients listClients, String sInput, BufferedReader reader) {
+    private void printList(String inputString) {
         ArrayList<Client> localClients;
-        if (sInput.equals(CMD_KEY_LIST) || sInput.split(" ").length == 1) {
+        if (inputString.equals(CMD_KEY_LIST) || inputString.split(" ").length == 1) {
             //-- print all clients without sorting
-            localClients = listClients.clients;
+            localClients = organizerData.clients;
         }
         else {
             //--sort clients to print
-            localClients = new ArrayList<>(listClients.clients);
-            String[] fields = sInput.split(" ")[1].split(";");
+            localClients = new ArrayList<>(organizerData.clients);
+            String[] fields = inputString.split(" ")[1].split(";");
+            //TODO use lambda and method reference
             localClients.sort(new Comparator<Client>() {
                 @Override
                 public int compare(Client o1, Client o2) {
@@ -184,14 +197,14 @@ class ConsoleDialog {
             out(localClients.get(i));
             if (i > 0 && (i + 1) % 10 == 0 && i < localClients.size() - 1) {
                 out(MSG_LIST_PAGING);
-                safeReadLine(reader);
+                safeReadLine();
             }
         }
     }
 
-    private void deleteClient(ListClients listClients, String sInput) {
+    private void deleteClient(String inputString) {
         //-- parse input string
-        String[] args = sInput.split(" ");
+        String[] args = inputString.split(" ");
         if (args.length < 2) {
             out(MSG_ERR_DELETE_NOCLIENTNUMBER);
             return;
@@ -205,32 +218,32 @@ class ConsoleDialog {
             return;
         }
         //-- find client by id
-        Client client = listClients.findClientById(id);
+        Client client = organizerData.findClientById(id);
         if (client == null) {
             out(String.format(MSG_ERR__CLIENTNOTFOUND, id));
             return;
         }
         //-- delete client
-        if (!listClients.clients.remove(client)) {
+        if (!organizerData.clients.remove(client)) {
             out(String.format(MSG_ERR_DELETE_CANNOTDELETEFROMLIST, id));
             return;
         }
         //-- save changes
-        listClients.saveData();
+        FileStorage.saveData(organizerData);
         out(client);
         out(String.format(MSG_DELETE_CLIENTDELETEDOK, id));
     }
 
-    private void findClientsByPhone(ListClients listClients, String sInput) {
+    private void findClientsByPhone(String inputString) {
         //-- parse input string
-        String[] args = sInput.split(" ");
+        String[] args = inputString.split(" ");
         if (args.length < 2) {
             out(MSG_ERR_FIND_NOPHONENUMBERSPECIFIED);
             return;
         }
         String phone = args[1];
         //-- find client by phone number
-        for (Client client : listClients.clients) {
+        for (Client client : organizerData.clients) {
             //-- check if client has a phone
             if (client.phones == null) {
                 continue;
@@ -246,20 +259,20 @@ class ConsoleDialog {
         }
     }
 
-    private void insertClient(ListClients listClients, BufferedReader reader) {
+    private void insertClient() {
         try {
             //-- input client data
             out(MSG_INSERT_CREATENEWCLIENT);
             Client client = new Client();
             out(MSG_INSERT_ENTER_NAME);
-            client.name = safeReadLine(reader);
+            client.name = safeReadLine();
             out(MSG_INSERT_ENTER_POSITION);
-            client.position = safeReadLine(reader);
+            client.position = safeReadLine();
             out(MSG_INSERT_ENTER_ORGANISATION);
-            client.organisation = safeReadLine(reader);
+            client.organisation = safeReadLine();
             while (true) {
                 out(MSG_INSERT_ENTER_EMAIL);
-                client.email = safeReadLine(reader);
+                client.email = safeReadLine();
                 if (client.email.length() > 0 && !client.email.contains(MSG__EMAILKEY)) {
                     out(MSG_ERR__INVALIDEMAIL);
                 }
@@ -268,16 +281,16 @@ class ConsoleDialog {
                 }
             }
             out(MSG_INSERT_ENTER_PHONES);
-            String phones = safeReadLine(reader);
+            String phones = safeReadLine();
             if (phones.length() > 0) {
                 client.phones = phones.split(MSG__PHONESKEY);
             }
             //-- get new id
             int id = 0;
-            if (listClients.clients.size() > 0) {
-                id = listClients.clients.get(0).id;
+            if (organizerData.clients.size() > 0) {
+                id = organizerData.clients.get(0).id;
             }
-            for (Client c : listClients.clients) {
+            for (Client c : organizerData.clients) {
                 if (c.id > id) id = c.id;
             }
             if (id < Integer.MAX_VALUE) {
@@ -285,8 +298,8 @@ class ConsoleDialog {
             }
             client.id = id;
             //-- save data
-            listClients.clients.add(client);
-            listClients.saveData();
+            organizerData.clients.add(client);
+            FileStorage.saveData(organizerData);
             out(client);
             out(MSG_INSERT_CLIENTCREATEDOK);
         }
@@ -296,10 +309,10 @@ class ConsoleDialog {
         }
     }
 
-    private void updateClient(ListClients listClients, String sInput, BufferedReader reader) {
+    private void updateClient(String inputString) {
         try {
             //-- parse input string
-            String[] args = sInput.split(" ");
+            String[] args = inputString.split(" ");
             if (args.length < 2) {
                 out(MSG_ERR_UPDATE_NOCLIENTNUMBER);
                 return;
@@ -313,7 +326,7 @@ class ConsoleDialog {
                 return;
             }
             //-- find client by id
-            Client client = listClients.findClientById(id);
+            Client client = organizerData.findClientById(id);
             if (client == null) {
                 out(String.format(MSG_ERR__CLIENTNOTFOUND, id));
                 return;
@@ -324,26 +337,26 @@ class ConsoleDialog {
             out(client);
             out(String.format(MSG_UPDATE_CURRENTNAME, client.name));
             out(MSG_UPDATE_ENTERNAME);
-            s = safeReadLine(reader);
+            s = safeReadLine();
             if (s.length() > 0) {
                 client.name = s;
             }
             out(String.format(MSG_UPDATE_CURRENTPOSITION, client.position));
             out(MSG_UPDATE_ENTERPOSITION);
-            s = safeReadLine(reader);
+            s = safeReadLine();
             if (s.length() > 0) {
                 client.position = s;
             }
             out(String.format(MSG_UPDATE_CURRENTORGANISATION, client.organisation));
             out(MSG_UPDATE_ENTERORGANISATION);
-            s = safeReadLine(reader);
+            s = safeReadLine();
             if (s.length() > 0) {
                 client.organisation = s;
             }
             out(String.format(MSG_UPDATE_CURRENTEMAIL, client.email));
             while (true) {
                 out(MSG_UPDATE_ENTEREMAIL);
-                s = safeReadLine(reader);
+                s = safeReadLine();
                 if (s.length() > 0 && !s.contains(MSG__EMAILKEY)) {
                     out(MSG_ERR__INVALIDEMAIL);
                 }
@@ -364,12 +377,12 @@ class ConsoleDialog {
                 out(String.format(MSG_UPDATE_CURRENTPHONES, Arrays.toString(client.phones)));
             }
             out(MSG_UPDATE_ENTERPHONES);
-            s = safeReadLine(reader);
+            s = safeReadLine();
             if (s.length() > 0) {
                 client.phones = s.split(MSG__PHONESKEY);
             }
             //-- save data
-            listClients.saveData();
+            FileStorage.saveData(organizerData);
             out(client);
             out(MSG_UPDATE_CHANGEOK);
         }
