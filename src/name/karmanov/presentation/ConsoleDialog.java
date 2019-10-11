@@ -125,7 +125,12 @@ public class ConsoleDialog {
             e.printStackTrace();
         }
         finally {
-            try {reader.close();} catch (Exception e) {}
+            try {
+                reader.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -143,7 +148,7 @@ public class ConsoleDialog {
             //--sort clients to print
             localClients = new ArrayList<>(organizerData.clients);
             String[] customSortFields = inputString.toLowerCase().split(" ")[1].split(";");
-            localClients.sort((c1, c2) -> c1.customCompareTo(c2, customSortFields));
+            localClients.sort((c1, c2) -> c1.compareTo(c2, customSortFields));
         }
         //-- print clients list with paging
         for (int i = 0; i < localClients.size(); i++) {

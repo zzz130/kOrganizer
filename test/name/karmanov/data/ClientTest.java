@@ -54,7 +54,7 @@ class ClientTest {
         String sortString = "Фио";
         String[] customSortFields = sortString.toLowerCase().split(";");
         OrganizerData organizerData = OrganizerDataTest.generateTestData(new OrganizerData());
-        assertTrue(organizerData.clients.get(1).customCompareTo(organizerData.clients.get(2), customSortFields) < 0);
+        assertTrue(organizerData.clients.get(1).compareTo(organizerData.clients.get(2), customSortFields) < 0);
     }
 
     @Test
@@ -62,6 +62,6 @@ class ClientTest {
         String sortString = "-Фио";
         String[] customSortFields = sortString.toLowerCase().split(";");
         OrganizerData organizerData = OrganizerDataTest.generateTestData(new OrganizerData());
-        assertTrue(organizerData.clients.get(1).customCompareTo(organizerData.clients.get(2), customSortFields) > 0);
+        assertTrue(organizerData.clients.get(1).compareTo(organizerData.clients.get(2), customSortFields) > 0);
     }
 }
