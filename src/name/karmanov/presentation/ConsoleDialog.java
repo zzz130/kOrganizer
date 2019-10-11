@@ -31,12 +31,6 @@ public class ConsoleDialog {
     private static final String CMD_KEY_FIND = "find";
     private static final String CMD_KEY_INSERT = "insert";
     private static final String CMD_KEY_UPDATE = "update";
-    private static final String CMD_KEY_SORT_NAME = "фио";
-    private static final String CMD_KEY_SORT_POSITION = "должность";
-    private static final String CMD_KEY_SORT_ORGANISATION = "организация";
-    private static final String CMD_KEY_SORT_EMAIL = "email";
-    private static final String CMD_KEY_SORT_PHONE = "телефон";
-    private static final String CMD_KEY_SORT_NEGATIVE_PREFIX = "-";
     private static final String MSG_LIST_PAGING = "...Нажмите Enter для продолжения...";
     private static final String MSG_ERR_DELETE_NOCLIENTNUMBER = "Ошибка: Не указан номер клиента для удаления!";
     private static final String MSG_ERR_DELETE_NOIDNUMBER = "Ошибка: Необходимо указать номер клиента для удаления!";
@@ -148,49 +142,8 @@ public class ConsoleDialog {
         else {
             //--sort clients to print
             localClients = new ArrayList<>(organizerData.clients);
-            String[] fields = inputString.split(" ")[1].split(";");
-            //TODO use lambda and method reference
-            localClients.sort(new Comparator<Client>() {
-                @Override
-                public int compare(Client o1, Client o2) {
-                    int compareResult = 0;
-                    for (String field : fields) {
-                        boolean isNegativeSort = field.startsWith(CMD_KEY_SORT_NEGATIVE_PREFIX);
-                        field = field.trim().replace(CMD_KEY_SORT_NEGATIVE_PREFIX, "");
-                        switch (field) {
-                            case CMD_KEY_SORT_NAME:
-                                compareResult = o1.name.compareTo(o2.name);
-                                break;
-                            case CMD_KEY_SORT_POSITION:
-                                compareResult = o1.position.compareTo(o2.position);
-                                break;
-                            case CMD_KEY_SORT_ORGANISATION:
-                                compareResult = o1.organisation.compareTo(o2.organisation);
-                                break;
-                            case CMD_KEY_SORT_EMAIL:
-                                compareResult = o1.email.compareTo(o2.email);
-                                break;
-                            case CMD_KEY_SORT_PHONE:
-                                String s1 = "", s2 = "";
-                                if (o1.phones != null) {
-                                    s1 = Arrays.toString(o1.phones);
-                                }
-                                if (o2.phones != null) {
-                                    s2 = Arrays.toString(o2.phones);
-                                }
-                                compareResult = s1.compareTo(s2);
-                                break;
-                            default:
-                                compareResult = Integer.compare(o1.id, o2.id);
-                        }
-                        if (isNegativeSort) {
-                            compareResult *= -1;
-                        }
-                        if (compareResult != 0) break;
-                    }
-                    return compareResult;
-                }
-            });
+            String[] customSortFields = inputString.toLowerCase().split(" ")[1].split(";");
+            localClients.sort((c1, c2) -> c1.customCompareTo(c2, customSortFields));
         }
         //-- print clients list with paging
         for (int i = 0; i < localClients.size(); i++) {

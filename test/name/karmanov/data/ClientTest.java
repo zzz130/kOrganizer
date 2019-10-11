@@ -1,5 +1,6 @@
 package name.karmanov.data;
 
+import name.karmanov.OrganizerDataTest;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,5 +47,21 @@ class ClientTest {
         String expectedString = "Клиент #1, ФИО 'Иванов', Должность 'Инженер', Организация 'ООО \"УУУ\"', "
                 + "e-mail 'ivanov@uuu.ru', номер телефона [12-22]";
         assertEquals(expectedString, client.toString());
+    }
+
+    @Test
+    void customCompareTo_Name() {
+        String sortString = "Фио";
+        String[] customSortFields = sortString.toLowerCase().split(";");
+        OrganizerData organizerData = OrganizerDataTest.generateTestData(new OrganizerData());
+        assertTrue(organizerData.clients.get(1).customCompareTo(organizerData.clients.get(2), customSortFields) < 0);
+    }
+
+    @Test
+    void customCompareTo_NameDesc() {
+        String sortString = "-Фио";
+        String[] customSortFields = sortString.toLowerCase().split(";");
+        OrganizerData organizerData = OrganizerDataTest.generateTestData(new OrganizerData());
+        assertTrue(organizerData.clients.get(1).customCompareTo(organizerData.clients.get(2), customSortFields) > 0);
     }
 }

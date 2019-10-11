@@ -164,7 +164,7 @@ class ConsoleDialogTest {
     }
 
     @Test
-    void processInput_ListFilter() {
+    void processInput_ListSort() {
         //-- prepare testing
         String testInput = "list -Фио" + RN + RN + RN;
         String expectedString = "Органайзер загружен, найдено 20 клиентов" + RN +
