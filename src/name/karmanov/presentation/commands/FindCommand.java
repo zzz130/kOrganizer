@@ -1,7 +1,8 @@
 package name.karmanov.presentation.commands;
 
-import name.karmanov.data.Client;
 import name.karmanov.presentation.ConsoleDialog;
+
+import java.util.Arrays;
 
 public class FindCommand extends AbstractCommand {
     private static final String COMMAND_KEY = "find";
@@ -26,19 +27,9 @@ public class FindCommand extends AbstractCommand {
         }
         String phone = args[1];
         //-- find client by phone number
-        for (Client client : consoleDialog.getOrganizerData().clients) {
-            //-- check if client has a phone
-            if (client.phones == null) {
-                continue;
-            }
-            //-- check all phone number to see if it matches the search string
-            for (String s : client.phones) {
-                if (s.contains(phone)) {
-                    //if phone found then print client and go to next client
-                    consoleDialog.out(client);
-                    break;
-                }
-            }
-        }
+        consoleDialog.getOrganizerData().clients.stream()
+                .filter(x -> !(x.phones == null || x.phones.length == 0))
+                .filter(x -> Arrays.stream(x.phones).anyMatch(y -> y.contains(phone)))
+                .forEach(consoleDialog::out);
     }
 }

@@ -14,24 +14,19 @@ public class OrganizerData {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if (clients == null || clients.size() < 1) {
+        if (clients == null || clients.size() == 0) {
             sb.append(MSG_TOSTRING);
         }
         else {
-            for (Client client : clients) {
-                sb.append(client);
+            clients.forEach(x -> {
+                sb.append(x);
                 sb.append(System.getProperty("line.separator"));
-            }
-            }
+            });
+        }
         return sb.toString();
     }
 
     public Client findClientById(int id) {
-        for (Client client : clients) {
-            if (client.id == id) {
-                return client;
-            }
-        }
-        return null;
+        return clients.stream().filter(x -> x.id == id).findAny().orElse(null);
     }
 }

@@ -52,8 +52,8 @@ public class ConsoleDialog {
         }
         catch (Exception e) {
             e.printStackTrace();
-            return "";
         }
+        return "";
     }
 
     public OrganizerData getOrganizerData() {
